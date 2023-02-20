@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # 3rd part
     # locals
     'users.apps.UsersConfig',
+    'energy_prices.apps.EnergyPricesConfig',
 ]
 
 MIDDLEWARE = [
