@@ -6,9 +6,9 @@ from . import models
 
 class CustomUserDashboard(UserAdmin):
     list_display = ('id', 'username')
-    list_editable = ('username')
-    list_display_links = ('id')
-    ordering = ('-id')
+    list_editable = ('username',)
+    list_display_links = ('id',)
+    ordering = ('-id',)
 
 
 admin.site.register(models.CustomUser, CustomUserDashboard)
