@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class EnergyPrices(models.Model):
+class EnergyPrice(models.Model):
     valid_from = models.DateTimeField(primary_key=True, editable=False, help_text='Time at which given price starts')
     valid_to = models.DateTimeField(editable=False, help_text='Time at which given price stops')
     value_inc_vat = models.DecimalField(max_digits=4,
