@@ -1,10 +1,8 @@
 from _decimal import Decimal
-
+from energy_prices.models import EnergyPrice
 import pytest
 
 from faker import Faker
-
-from energy_prices.models import EnergyPrice
 
 
 @pytest.fixture
