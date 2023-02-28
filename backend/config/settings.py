@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 3rd part
+    'rest_framework',
     # locals
     'users.apps.UsersConfig',
     'energy_prices.apps.EnergyPricesConfig',
