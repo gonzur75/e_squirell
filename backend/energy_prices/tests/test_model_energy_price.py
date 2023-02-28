@@ -17,4 +17,4 @@ def test_energy_prices_creation(energy_price):
 
 @pytest.mark.models
 def test_energy_prices_fields(energy_price):
-    assert [*vars(energy_price)] == ['_state', 'valid_from', 'valid_to', 'value_inc_vat']
+    assert [*vars(energy_price)] == ['_state', 'id', 'valid_from', 'valid_to', 'value_inc_vat']
