@@ -9,3 +9,7 @@ class ListEnergyPrice(generics.ListAPIView):
     queryset = models.EnergyPrice.objects.all()
     serializer_class = serializers.EnergyPriceSerializer
 
+
+class DetailEnergyPrice(generics.RetrieveAPIView):
+    queryset = models.EnergyPrice.objects.all()
+    serializer_class = serializers.EnergyPriceSerializer

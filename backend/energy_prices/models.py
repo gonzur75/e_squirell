@@ -10,5 +10,6 @@ class EnergyPrice(models.Model):
                                         help_text='energy price per kwh, with Vat',
                                         verbose_name='Price per kwh'
                                         )
+
     def __str__(self):
         return f'Energy price from {self.valid_from} to {self.valid_to}'
