@@ -8,3 +8,4 @@ from . import models, serializers
 class ListEnergyPrice(generics.ListAPIView):
     queryset = models.EnergyPrice.objects.all()
     serializer_class = serializers.EnergyPriceSerializer
+
