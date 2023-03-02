@@ -2,8 +2,6 @@ from django.contrib import admin
 
 from energy_prices.models import EnergyPrice
 
-
-# Register your models here.
 class EnergyPriceAdmin(admin.ModelAdmin):
     list_display = (
         'valid_from',
