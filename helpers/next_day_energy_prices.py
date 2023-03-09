@@ -4,8 +4,8 @@ import time
 # Using random UK octopus energy tariff, until suitable Polish alternative is available
 OCTOPUS_ENERGY_API_URL = "https://api.octopus.energy/v1/products/AGILE-FLEX-22-11-25/electricity-tariffs/E-1R-AGILE" \
                          "-FLEX-22-11-25-C/standard-unit-rates/"
-
 ENERGY_PRICES_API = 'http://127.0.0.1:8000/energy_price_api/v1/energy_prices/'
+ENERGY_PRICES_API_LAST_ENTRY = 'http://127.0.0.1:8000/energy_price_api/v1/energy_prices/last_entry/'
 
 MAX_CALLS = 15
 
@@ -61,9 +61,27 @@ def api_call(url, method, data=None):
             break
 
 
-data = api_call(OCTOPUS_ENERGY_API_URL, 'GET')
+def data_cleaning(item):
+    item.pop('value_exc_vat')
+    rounded_value = round(item['value_inc_vat'], 3)
+    item['value_inc_vat'] = rounded_value
+    return item
 
-for result in data['results']:
-    result.pop('value_exc_vat')
-    print(result)
+
+def get_energy_prices():
+    return api_call(OCTOPUS_ENERGY_API_URL, 'GET')
+
+
+def get_energy_prices_last_entry():
+    return api_call(ENERGY_PRICES_API_LAST_ENTRY, 'GET')
+
+
+def get_cleaned_data(data):
+    last_entry = get_energy_prices_last_entry()
+    return [data_cleaning(item) for item in data['results'] if item['valid_from'] > last_entry['valid_to']]
+
+
+cleaned_data = get_cleaned_data(get_energy_prices())
+
+for result in cleaned_data:
     api_call(ENERGY_PRICES_API, 'POST', result)
