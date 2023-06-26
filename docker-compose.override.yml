@@ -1,0 +1,8 @@
+services:
+  mosquitto:
+    build:
+      args:
+        GID: 1000
+        UID: 1000
+        USER: "marcin"
+    user: 1000:1000
