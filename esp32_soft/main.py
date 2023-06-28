@@ -15,7 +15,8 @@ def connect_and_subscribe():
   print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_sub))
   return client
 
-def restart_and_reconnect():
+def restart_and_reconnect(e):
+  print(f'Error {e}' )
   print('Failed to connect to MQTT broker. Reconnecting...')
   time.sleep(10)
   machine.reset()
@@ -23,7 +24,7 @@ def restart_and_reconnect():
 try:
   client = connect_and_subscribe()
 except OSError as e:
-  restart_and_reconnect()
+  restart_and_reconnect(e)
 
 while True:
   try:

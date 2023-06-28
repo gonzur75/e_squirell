@@ -11,11 +11,11 @@ esp.osdebug(None)
 import gc
 gc.collect()
 
-ssid = "Strugalowka" # 'REPLACE_WITH_YOUR_SSID'
-password = "Akacja17" # 'REPLACE_WITH_YOUR_PASSWORD'
-mqtt_server = ''   # 'REPLACE_WITH_YOUR_MQTT_BROKER_IP'
-#EXAMPLE IP ADDRESS
-#mqtt_server = '192.168.1.144'
+ssid = "Strugalowka"  # 'REPLACE_WITH_YOUR_SSID'
+password = "Akacja17"  # 'REPLACE_WITH_YOUR_PASSWORD'
+mqtt_server = "192.168.8.2"   # 'REPLACE_WITH_YOUR_MQTT_BROKER_IP'
+# EXAMPLE IP ADDRESS
+# mqtt_server = '172.17.0.1'
 client_id = ubinascii.hexlify(machine.unique_id())
 topic_sub = b'notification'
 topic_pub = b'hello'
@@ -23,6 +23,7 @@ topic_pub = b'hello'
 last_message = 0
 message_interval = 5
 counter = 0
+
 
 station = network.WLAN(network.STA_IF)
 
