@@ -1,5 +1,5 @@
 import time
-import ubinascii
+
 import machine
 import network
 import esp
@@ -9,11 +9,7 @@ import gc
 
 gc.collect()
 
-mqtt_server = "192.168.8.2"  # 'REPLACE_WITH_YOUR_MQTT_BROKER_IP'
 
-client_id = ubinascii.hexlify(machine.unique_id())
-topic_sub = b'notification'
-topic_pub = b'hello'
 
 last_message = 0
 message_interval = 5
