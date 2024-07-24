@@ -1,4 +1,3 @@
-
 import time
 import ubinascii
 import machine
@@ -11,8 +10,7 @@ import gc
 gc.collect()
 
 mqtt_server = "192.168.8.2"  # 'REPLACE_WITH_YOUR_MQTT_BROKER_IP'
-# EXAMPLE IP ADDRESS
-# mqtt_server = '172.17.0.1'
+
 client_id = ubinascii.hexlify(machine.unique_id())
 topic_sub = b'notification'
 topic_pub = b'hello'
@@ -45,14 +43,3 @@ def wlan_connect(ssid, password, max_retries=200):
 
 
 wlan_connect(SSID, PASSWORD)
-
-# station = network.WLAN(network.STA_IF)
-#
-# station.active(True)
-# station.connect(ssid, password)
-#
-# while station.isconnected() == False:
-#   print('disconnected')
-#
-# print('Connection successful')
-# print(station.ifconfig())
