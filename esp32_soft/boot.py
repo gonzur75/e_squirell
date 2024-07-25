@@ -9,9 +9,6 @@ import gc
 
 gc.collect()
 
-
-
-last_message = 0
 message_interval = 5
 counter = 0
 SSID = 'Strugalowka'
@@ -20,22 +17,23 @@ PASSWORD = 'Akacja17'
 
 def wlan_connect(ssid, password, max_retries=200):
     wlan = network.WLAN(network.STA_IF)
-    try:
-        print(f'Connecting to network: {ssid}.')
-        wlan.active(True)
-        wlan.connect(ssid, password)
 
-        for _ in range(max_retries):
-            if wlan.isconnected():
-                print(f'\nConnected. \nNetwork config: {wlan.ifconfig()}')
-                return True
-            time.sleep(0.1)
-            print('.', end='')
+    print(f'Connecting to network: {ssid}.')
+    wlan.active(True)
+    wlan.connect(ssid, password)
 
-        print(f'Failed to connect to {ssid}')
+    for _ in range(max_retries):
+        if wlan.isconnected():
+            print(f'\nConnected. \nNetwork config: {wlan.ifconfig()}')
+            return True
+        time.sleep(0.1)
+        print('.', end='')
 
-    except OSError as error:
-        print(f'System returned error with message:{error}. \nPlease restart your device ')
+    print(f'Failed to connect to {ssid}')
 
 
-wlan_connect(SSID, PASSWORD)
+try:
+    wlan_connect(SSID, PASSWORD)
+
+except OSError as error:
+    print(f'System returned error with message: {error}. \nPlease restart your device ')
