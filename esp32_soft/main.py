@@ -12,9 +12,11 @@ TOPIC = b'heat_storage'
 
 
 def sub_cb(topic, msg):
-    print(topic, msg)
+    # print(topic, msg)
     if msg == b'get_temps':
         print('Sending temps')
+        temps = read_temperature()
+        client.publish(TOPIC, temps)
 
 
 def connect_and_subscribe(topic_sub, mqtt_server, client_id=None):
@@ -41,6 +43,8 @@ def read_temperature():
     readings = ds.scan()
     ds.convert_temp()
     time.sleep_ms(750)
+    temperatures = map(lambda reading: str(ds.read_temp(reading)), readings)
+    return ' '.join(temperatures)
 
 
 try:
