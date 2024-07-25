@@ -1,22 +1,12 @@
 # Complete project details at https://RandomNerdTutorials.com
 import time
 import ubinascii
-
 import machine
-import onewire
-import ds18x20
 from umqttsimple import MQTTClient
 
 MQTT_SERVER = "192.168.8.2"  # 'YOUR_MQTT_BROKER_IP'
 TOPIC = b'heat_storage'
 
-
-def sub_cb(topic, msg):
-    # print(topic, msg)
-    if msg == b'get_temps':
-        print('Sending temps')
-        temps = read_temperature()
-        client.publish(TOPIC, temps)
 
 
 def connect_and_subscribe(topic_sub, mqtt_server, client_id=None):
@@ -37,17 +27,25 @@ def restart_and_reconnect(e):
     machine.reset()
 
 
-def read_temperature():
-    thermometer = onewire.OneWire(machine.Pin(14))
-    ds = ds18x20.DS18X20(thermometer)
-    readings = ds.scan()
-    ds.convert_temp()
-    time.sleep_ms(750)
-    temperatures = map(lambda reading: str(ds.read_temp(reading)), readings)
+def read_temperature(temp_sensor):
+    readings = temp_sensor.scan()
+    temp_sensor.convert_temp()
+    time.sleep_ms(750)  # time to allow for temp conversion
+    temperatures = map(lambda reading: str(temp_sensor.read_temp(reading)), readings)
     return ' '.join(temperatures)
 
 
+def sub_cb(topic, msg):
+    if msg == b'get_temps':
+        temps = read_temperature(TEMP_SENSOR)
+        client.publish(TOPIC, temps)
+    if msg == b'1_ON':
+
+        print('1_ON')
+
+
 try:
+
     client = connect_and_subscribe(TOPIC, MQTT_SERVER)
 except OSError as e:
     restart_and_reconnect(e)

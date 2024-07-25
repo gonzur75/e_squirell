@@ -3,14 +3,13 @@ import time
 import machine
 import network
 import esp
-
+import onewire
+import ds18x20
 esp.osdebug(None)
 import gc
 
 gc.collect()
 
-message_interval = 5
-counter = 0
 SSID = 'Strugalowka'
 PASSWORD = 'Akacja17'
 
@@ -32,8 +31,14 @@ def wlan_connect(ssid, password, max_retries=200):
     print(f'Failed to connect to {ssid}')
 
 
+def temp_sensor_setup():
+    one_wire_pin = machine.Pin(14)
+    one_wire = onewire.OneWire(one_wire_pin)
+    return ds18x20.DS18X20(one_wire)
+
+
 try:
     wlan_connect(SSID, PASSWORD)
-
+    TEMP_SENSOR = temp_sensor_setup()
 except OSError as error:
     print(f'System returned error with message: {error}. \nPlease restart your device ')
