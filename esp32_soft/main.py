@@ -8,7 +8,6 @@ MQTT_SERVER = "192.168.8.2"  # 'YOUR_MQTT_BROKER_IP'
 TOPIC = b'heat_storage'
 
 
-
 def connect_and_subscribe(topic_sub, mqtt_server, client_id=None):
     client_id = client_id if client_id is not None else ubinascii.hexlify(machine.unique_id())
 
@@ -35,13 +34,21 @@ def read_temperature(temp_sensor):
     return ' '.join(temperatures)
 
 
+def handle_heating(relay_action, relay_number):
+    relay = machine.Pin(RELAYS[relay_number], machine.Pin.OUT)
+    if relay.value():
+        print('relay already on')
+        pass
+    relay.value(1)
+
+
 def sub_cb(topic, msg):
     if msg == b'get_temps':
         temps = read_temperature(TEMP_SENSOR)
         client.publish(TOPIC, temps)
-    if msg == b'1_ON':
-
-        print('1_ON')
+    if msg.starstwith('relay'):
+        handle_heating(msg[-2:], msg[7])
+        print('relay_1_ON')
 
 
 try:

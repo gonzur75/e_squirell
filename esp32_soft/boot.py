@@ -12,6 +12,7 @@ gc.collect()
 
 SSID = 'Strugalowka'
 PASSWORD = 'Akacja17'
+RELAYS = [26, 15]
 
 
 def wlan_connect(ssid, password, max_retries=200):
