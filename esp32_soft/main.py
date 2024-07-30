@@ -35,24 +35,30 @@ def read_temperature(temp_sensor):
 
 
 def handle_heating(relay_action, relay_number):
-    relay = machine.Pin(RELAYS[relay_number], machine.Pin.OUT)
-    if relay.value():
-        print('relay already on')
-        pass
-    relay.value(1)
+    print(relay_number)
+    max_relays = len(RELAYS_PIN)
+    if relay_number > max_relays:
+        msg = f'We only have: {max_relays} relays. Please try again!'
+        client.publish(TOPIC, msg)
+        return
+    relay = machine.Pin(RELAYS_PIN[relay_number - 1], machine.Pin.OUT)
+    preform_action = getattr(relay, relay_action)
+    preform_action()
+
 
 
 def sub_cb(topic, msg):
     if msg == b'get_temps':
         temps = read_temperature(TEMP_SENSOR)
         client.publish(TOPIC, temps)
-    if msg.starstwith('relay'):
-        handle_heating(msg[-2:], msg[7])
-        print('relay_1_ON')
+    if msg.startswith('relay'):
+        decoded_message = msg.decode('ascii')
+        handle_heating(decoded_message[8:], int(decoded_message[6]))
+        print(msg)
 
 
 try:
-
+    print('Setting up mqtt connection')
     client = connect_and_subscribe(TOPIC, MQTT_SERVER)
 except OSError as e:
     restart_and_reconnect(e)
