@@ -4,7 +4,7 @@ import ubinascii
 import machine
 from umqttsimple import MQTTClient
 
-MQTT_SERVER = "192.168.8.2"  # 'YOUR_MQTT_BROKER_IP'
+MQTT_SERVER = SECRETS['mqtt']['server']
 TOPIC = b'heat_storage'
 
 
