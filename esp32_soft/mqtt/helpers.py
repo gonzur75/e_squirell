@@ -1,34 +1,36 @@
-import machine
-import time
-import ubinascii
-from umqtt.simple import MQTTClient
+from umqtt.robust import MQTTClient
 
-from heating import read_temperature, handle_heating
+from config import TEMP_SENSOR
+from heating import handle_heating, read_temperature
 
 
-def connect_and_subscribe(topic_sub, mqtt_server, callback, client_id=None, keepalive=250):
-    client_id = client_id if client_id is not None else ubinascii.hexlify(machine.unique_id())
+def add_self(func):
+    def inner(self, *args, **kwargs):
+        return func(self, *args, **kwargs)
 
-    _client = MQTTClient(client_id, mqtt_server, keepalive)
-    _client.set_callback(callback)
-    _client.connect()
-    _client.subscribe(topic_sub)
-    print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_sub))
-    return _client
+    return inner
 
 
-def restart_and_reconnect(e):
-    print(f'Error {e}')
-    print('Failed to connect to MQTT broker. Reconnecting...')
-    time.sleep(10)
-    machine.reset()
+class StorageHeaterClient(MQTTClient):
 
+    def setup(self, topic_sub):
+        self.set_callback()
+        self.connect()
+        self.subscribe(topic_sub)
+        print('Connected to %s MQTT broker, subscribed to %s topic' % (self.server, topic_sub))
 
-def subscribe_callback(topic, msg):
-    if msg == b'get_temps':
-        temps = read_temperature(TEMP_SENSOR)
-        CLIENT.publish(topic, temps)
-    if msg.startswith('relay'):
-        decoded_message = msg.decode('ascii')
-        handle_heating(decoded_message[8:], int(decoded_message[6]))
-        print(msg)
+    def set_callback(self):
+        self.cb = self.callback()
+
+    def callback(self):
+        def callback(topic, msg):
+            if msg == b'get_temps':
+                temps = read_temperature(TEMP_SENSOR)
+                self.publish(topic, temps)
+
+            if msg.startswith('relay'):
+                decoded_message = msg.decode('ascii')
+                response = handle_heating(decoded_message[8:], int(decoded_message[6]))
+                self.publish(topic, response)
+
+        return callback
