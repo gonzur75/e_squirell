@@ -4,13 +4,6 @@ from config import TEMP_SENSOR
 from heating import handle_heating, read_temperature
 
 
-def add_self(func):
-    def inner(self, *args, **kwargs):
-        return func(self, *args, **kwargs)
-
-    return inner
-
-
 class StorageHeaterClient(MQTTClient):
 
     def setup(self, topic_sub):

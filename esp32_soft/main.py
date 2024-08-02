@@ -1,7 +1,7 @@
 import time
 
 from config import CLIENT_ID, MQTT_SERVER, TOPIC
-from helpers.helpers import restart_and_reconnect
+from helpers import restart_and_reconnect
 from mqtt import StorageHeaterClient
 
 try:
