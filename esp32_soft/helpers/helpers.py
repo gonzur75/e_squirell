@@ -3,8 +3,11 @@ import time
 
 import ds18x20
 import machine
-import network
 import onewire
+
+
+class MaxRetriesError(Exception):
+    pass
 
 
 def load_secrets(file_path: str):
@@ -12,22 +15,16 @@ def load_secrets(file_path: str):
         return json.loads(secret_file.read())
 
 
-def wlan_connect(ssid, password, max_retries=200):
-    wlan = network.WLAN(network.STA_IF)
-
-    print(f'Connecting to network: {ssid}.')
-    wlan.active(True)
-    wlan.connect(ssid, password)
-
+def check_connection(wlan, max_retries=200):
     for _ in range(max_retries):
         if wlan.isconnected():
             print(f'\nConnected. \nNetwork config: {wlan.ifconfig()}')
             time.sleep(1)
             return True
-        time.sleep(0.1)
+        time.sleep(1)
         print('.', end='')
 
-    print(f'Failed to connect to {ssid}')
+    raise OSError(f'Failed to connect to {wlan.config("ssid")}, exceeded max_retries {max_retries}')
 
 
 def temp_sensor_setup(sensor_pin: int):
