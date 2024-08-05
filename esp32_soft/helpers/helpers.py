@@ -6,10 +6,6 @@ import machine
 import onewire
 
 
-class MaxRetriesError(Exception):
-    pass
-
-
 def load_secrets(file_path: str):
     with open(file_path) as secret_file:
         return json.loads(secret_file.read())
