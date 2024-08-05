@@ -13,3 +13,6 @@ TOPIC = b'heat_storage'
 TEMPERATURE_SENSOR_PIN = 14
 TEMP_SENSOR = temp_sensor_setup(TEMPERATURE_SENSOR_PIN)
 CLIENT_ID = ubinascii.hexlify(machine.unique_id())
+
+SENSORS = const((b'(\xff"\xc70\x17\x032',))
+MESSAGE_INTERVAL = const(300)

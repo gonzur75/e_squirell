@@ -1,1 +1,1 @@
-from heating.heating import handle_heating, read_temperature
+from heating.heating import get_relays_status, handle_heating, read_temperature, get_status

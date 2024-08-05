@@ -1,7 +1,7 @@
 from umqtt.robust import MQTTClient
 
-from config import TEMP_SENSOR
-from heating import handle_heating, read_temperature
+from config import RELAYS_PIN, TEMP_SENSOR
+from heating import get_relay_status, handle_heating, read_temperature
 
 
 class StorageHeaterClient(MQTTClient):
@@ -17,10 +17,6 @@ class StorageHeaterClient(MQTTClient):
 
     def callback(self):
         def callback(topic, msg):
-            if msg == b'get_temps':
-                temps = read_temperature(TEMP_SENSOR)
-                self.publish(topic, temps)
-
             if msg.startswith('relay'):
                 decoded_message = msg.decode('ascii')
                 response = handle_heating(decoded_message[8:], int(decoded_message[6]))

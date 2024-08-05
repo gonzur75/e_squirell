@@ -1,12 +1,13 @@
 import gc
-import network
+
 import esp
+import network
 
 from config import PASSWORD, SSID
 from helpers import check_connection
 from helpers.helpers import restart_and_reconnect
 
-esp.osdebug(0)
+esp.osdebug(None)
 gc.collect()
 
 print(f'Connecting to network: {SSID}.')

@@ -2,15 +2,20 @@ import time
 
 import machine
 
-from config import RELAYS_PIN, TOPIC
+from config import RELAYS_PIN, SENSORS, TEMP_SENSOR
 
 
-def read_temperature(temp_sensor):
-    readings = temp_sensor.scan()
-    temp_sensor.convert_temp()
+def get_status():
+    return {
+        'temps': read_temperature(),
+        'relay_state': get_relays_status()
+    }
+
+
+def read_temperature():
+    TEMP_SENSOR.convert_temp()
     time.sleep_ms(750)  # time to allow for temp conversion
-    temperatures = map(lambda reading: str(temp_sensor.read_temp(reading)), readings)
-    return ' '.join(temperatures)
+    return tuple(map(lambda sensor: TEMP_SENSOR.read_temp(sensor), SENSORS))
 
 
 def handle_heating(relay_action, relay_number):
@@ -23,3 +28,12 @@ def handle_heating(relay_action, relay_number):
     preform_action = getattr(relay, relay_action)
     preform_action()
     return f'Relay {relay_number}: {relay_action}'
+
+
+def relay_state(pin):
+    relay = machine.Pin(pin, machine.Pin.OUT)
+    return relay.value()
+
+
+def get_relays_status():
+    return tuple(relay_state(pin) for pin in RELAYS_PIN)
