@@ -1,14 +1,10 @@
 import json
 import time
 
-from config import CLIENT_ID, MQTT_SERVER, TOPIC, MESSAGE_INTERVAL
+from config import CLIENT_ID, MESSAGE_INTERVAL, MQTT_SERVER, TOPIC
 from heating import get_status
 from helpers import restart_and_reconnect
 from mqtt import StorageHeaterClient
-
-LAST_MESSAGE = 0
-
-
 
 try:
     print('Setting up mqtt connection')
@@ -19,18 +15,23 @@ except OSError as e:
 
 
 def run():
-    try:
-        if (time.time() - LAST_MESSAGE) > MESSAGE_INTERVAL:
-            payload = json.dump(get_status())
+    last_message = 0
 
-            CLIENT.publish(topic=TOPIC, payload=get_status())
-
+    def inner():
+        nonlocal last_message
+        if (time.time() - last_message) > MESSAGE_INTERVAL:
+            payload = json.dumps(get_status())
+            CLIENT.publish(TOPIC, payload)
+            last_message = time.time()
         CLIENT.check_msg()
         time.sleep(5)
-    except OSError as error:
-        restart_and_reconnect(error)
-    return
 
+    return inner
+
+run_instance = run()
 
 while True:
-    run()
+    try:
+        run_instance()
+    except OSError as error:
+        restart_and_reconnect(error)

@@ -27,7 +27,7 @@ def handle_heating(relay_action, relay_number):
     relay = machine.Pin(RELAYS_PIN[relay_number - 1], machine.Pin.OUT)
     preform_action = getattr(relay, relay_action)
     preform_action()
-    return f'Relay {relay_number}: {relay_action}'
+    return {relay_number: relay_action}
 
 
 def relay_state(pin):

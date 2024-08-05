@@ -1,7 +1,8 @@
+import json
+
 from umqtt.robust import MQTTClient
 
-from config import RELAYS_PIN, TEMP_SENSOR
-from heating import get_relay_status, handle_heating, read_temperature
+from heating import handle_heating
 
 
 class StorageHeaterClient(MQTTClient):
@@ -20,6 +21,6 @@ class StorageHeaterClient(MQTTClient):
             if msg.startswith('relay'):
                 decoded_message = msg.decode('ascii')
                 response = handle_heating(decoded_message[8:], int(decoded_message[6]))
-                self.publish(topic, response)
+                self.publish(topic, json.dumps(response))
 
         return callback
