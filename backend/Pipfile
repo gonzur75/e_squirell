@@ -9,9 +9,12 @@ django = "*"
 djangorestframework = "*"
 pytest-django = "*"
 python-dotenv = "*"
+faker = "*"
+coverage = "*"
+pytest-cov = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
-python_full_version = "3.11.1"
+python_version = "3.11.9"
+python_full_version = "3.11.9"
