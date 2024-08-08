@@ -1,24 +1,6 @@
-import pytest
-
-from conftest import fake
+from conftest import storage_heater_status
 
 from storage_heater.models import StorageHeater
-
-
-@pytest.fixture
-def storage_heater_status(db):
-    yield StorageHeater.objects.create(
-        relay_one=fake.random_int(min=0, max=1),
-        relay_two=fake.random_int(min=0, max=1),
-        relay_three=fake.random_int(min=0, max=1),
-        relay_four=fake.random_int(min=0, max=1),
-        relay_five=fake.random_int(min=0, max=1),
-        relay_six=fake.random_int(min=0, max=1),
-        temp_one=fake.pyfloat(left_digits=3, right_digits=1, min_value=-55, max_value=120),
-        temp_two=fake.pyfloat(left_digits=3, right_digits=1, min_value=-55, max_value=120),
-        temp_three=fake.pyfloat(left_digits=3, right_digits=1, min_value=-55, max_value=120),
-        temp_four=fake.pyfloat(left_digits=3, right_digits=1, min_value=-55, max_value=120),
-    )
 
 
 def test_storage_heater_status_creation(storage_heater_status):

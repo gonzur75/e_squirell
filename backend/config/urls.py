@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('energy_price_api/v1/', include('energy_prices.urls')),
+    path('heat_storage_api/v1/', include('storage_heater.urls')),
 ]
