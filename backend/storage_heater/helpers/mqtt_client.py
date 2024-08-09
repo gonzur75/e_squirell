@@ -1,5 +1,7 @@
+import json
+
 from config import settings
-# from storage_heater.serializers import StorageHeaterSerializer
+
 
 import paho.mqtt.client as mqtt
 
@@ -10,8 +12,12 @@ def on_connect(mqtt_client, userdata, flags, reason_code):
 
 
 def on_message(mqtt_client, userdata, msg):
-    # serializer = StorageHeaterSerializer(msg.payload)
-    # serializer.save()
+    from storage_heater.serializers import StorageHeaterSerializer
+    payload = str(msg.payload.decode('utf-8'))
+
+    serializer = StorageHeaterSerializer(data=json.loads(payload))
+    serializer.is_valid()
+    serializer.save()
     print(msg.topic + " " + str(msg.payload))
 
 
