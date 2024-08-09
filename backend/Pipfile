@@ -12,6 +12,7 @@ python-dotenv = "*"
 faker = "*"
 coverage = "*"
 pytest-cov = "*"
+paho-mqtt = "*"
 
 [dev-packages]
 

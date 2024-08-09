@@ -131,3 +131,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+MQTT_SERVER = os.environ.get('MQTT_SERVER')
+MQTT_PORT = int(os.environ.get('MQTT_PORT'))
+MQTT_KEEPALIVE = 60
+MQTT_USER = os.environ.get('MQTT_USER')
+MQTT_PASSWORD = os.environ.get('MQTT_PASSWORD')
