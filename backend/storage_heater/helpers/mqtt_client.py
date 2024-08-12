@@ -1,9 +1,7 @@
 import json
 
-from config import settings
-
-
 import paho.mqtt.client as mqtt
+from config import settings
 
 
 def on_connect(mqtt_client, userdata, flags, reason_code):
@@ -19,7 +17,6 @@ def on_message(mqtt_client, userdata, msg):
         serializer.is_valid()
         serializer.save()
         print(msg.topic + " " + str(msg.payload))
-
 
 
 client = mqtt.Client()

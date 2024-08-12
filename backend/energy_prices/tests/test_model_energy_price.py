@@ -1,8 +1,7 @@
+import datetime
 from decimal import Decimal
 
-import datetime
 import pytest
-
 from energy_prices.models import EnergyPrice
 
 

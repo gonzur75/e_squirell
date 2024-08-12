@@ -1,10 +1,8 @@
+import pytest
 from _decimal import Decimal
 from energy_prices.models import EnergyPrice
-import pytest
-from rest_framework.test import APIRequestFactory
-
 from faker import Faker
-
+from rest_framework.test import APIRequestFactory
 from storage_heater.models import StorageHeater
 
 fake = Faker()

@@ -1,6 +1,5 @@
 
 from django.urls import reverse
-
 from energy_prices.models import EnergyPrice
 
 

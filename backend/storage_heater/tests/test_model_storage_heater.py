@@ -1,5 +1,4 @@
 from conftest import storage_heater_status
-
 from storage_heater.models import StorageHeater
 
 

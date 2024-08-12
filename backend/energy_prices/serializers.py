@@ -1,6 +1,5 @@
-from rest_framework import serializers
-
 from energy_prices import models
+from rest_framework import serializers
 
 
 class EnergyPriceSerializer(serializers.ModelSerializer):
