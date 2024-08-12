@@ -137,3 +137,4 @@ MQTT_PORT = int(os.environ.get('MQTT_PORT'))
 MQTT_KEEPALIVE = 60
 MQTT_USER = os.environ.get('MQTT_USER')
 MQTT_PASSWORD = os.environ.get('MQTT_PASSWORD')
+MQTT_TOPIC = "heat_storage"

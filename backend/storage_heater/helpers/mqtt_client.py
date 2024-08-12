@@ -8,17 +8,18 @@ import paho.mqtt.client as mqtt
 
 def on_connect(mqtt_client, userdata, flags, reason_code):
     print(f"Connected with result code {reason_code}")
-    client.subscribe("heat_storage")
+    client.subscribe(settings.MQTT_TOPIC)
 
 
 def on_message(mqtt_client, userdata, msg):
     from storage_heater.serializers import StorageHeaterSerializer
-    payload = str(msg.payload.decode('utf-8'))
+    payload = json.loads(msg.payload.decode('utf-8'))
+    if payload['status']:
+        serializer = StorageHeaterSerializer(data=json.loads(payload))
+        serializer.is_valid()
+        serializer.save()
+        print(msg.topic + " " + str(msg.payload))
 
-    serializer = StorageHeaterSerializer(data=json.loads(payload))
-    serializer.is_valid()
-    serializer.save()
-    print(msg.topic + " " + str(msg.payload))
 
 
 client = mqtt.Client()
