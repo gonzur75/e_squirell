@@ -6,16 +6,18 @@ from config import RELAYS_PIN, SENSORS, TEMP_SENSOR
 
 
 def get_status():
-    return {
-        'temps': read_temperature(),
-        'relay_state': get_relays_status()
-    }
+    temps = read_temperature()
+    relays = get_relays_status()
+    return {'status': True,
+            'time_stamp': time.time(),
+            } | temps | relays
 
 
 def read_temperature():
     TEMP_SENSOR.convert_temp()
     time.sleep_ms(750)  # time to allow for temp conversion
-    return tuple(map(lambda sensor: TEMP_SENSOR.read_temp(sensor), SENSORS))
+
+    return {name: TEMP_SENSOR.read_temp(address) for (name, address) in SENSORS.items()}
 
 
 def handle_heating(relay_action, relay_number):
@@ -36,4 +38,4 @@ def relay_state(pin):
 
 
 def get_relays_status():
-    return tuple(relay_state(pin) for pin in RELAYS_PIN)
+    return {name: relay_state(pin) for (name, pin) in RELAYS_PIN.items()}
