@@ -1,11 +1,17 @@
 import json
+import logging
 
 import paho.mqtt.client as mqtt
 from config import settings
 
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+
 def on_connect(mqtt_client, userdata, flags, reason_code):
-    print(f"Connected with result code {reason_code}")
+    logger.info(f"Connected with result code {reason_code}")
     client.subscribe(settings.MQTT_TOPIC)
 
 
@@ -16,7 +22,7 @@ def on_message(mqtt_client, userdata, msg):
         serializer = StorageHeaterSerializer(data=json.loads(payload))
         serializer.is_valid()
         serializer.save()
-        print(msg.topic + " " + str(msg.payload))
+        logger.info(msg.topic + " " + str(msg.payload))
 
 
 client = mqtt.Client()
