@@ -1,3 +1,3 @@
-from storage_heater.helpers.mqtt_client import mqtt
+from storage_heater.helpers.mqtt_client import MqttService
 
 

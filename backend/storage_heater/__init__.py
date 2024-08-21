@@ -1,3 +1,3 @@
-from storage_heater.helpers.mqtt_client import client
+from storage_heater.helpers.mqtt_client import MqttService
 
-client.loop_start()
+# client.loop_start()
