@@ -2,7 +2,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
-# Create your models here.
 class StorageHeater(models.Model):
     time_stamp = models.DateTimeField(help_text='Time of taking record', primary_key=True, unique=True,
                                       auto_now_add=True)
@@ -19,3 +18,7 @@ class StorageHeater(models.Model):
 
     def __str__(self):
         return f'Storage heater status at {self.time_stamp}'
+
+    def __repr__(self):
+        attrs = ', '.join(f'{key}={repr(value)}' for key, value in vars(self).items())
+        return f"{type(self).__name__}({attrs})"

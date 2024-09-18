@@ -47,7 +47,6 @@ def test_on_connect_failure(mock_client, caplog, service):
     assert f"Failed to subscribe to Mqtt topic: {settings.MQTT_TOPIC}" in caplog.text
 
 
-
 @patch.object(StorageHeaterSerializer, 'is_valid')
 @patch.object(StorageHeaterSerializer, 'save')
 def test_on_message(mock_is_valid, mock_save, mock_client, caplog, service, db):
@@ -71,5 +70,3 @@ def test_on_message_invalid_data(mock_save, mock_client, caplog, service, db):
     service.on_message(mock_client, None, msg)
     mock_save.assert_not_called()
     assert 'Failed validating data' in caplog.text
-
-
