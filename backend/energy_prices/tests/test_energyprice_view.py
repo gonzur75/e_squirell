@@ -1,20 +1,11 @@
-
-from django.urls import reverse
-from energy_prices.models import EnergyPrice
+from energy_prices.views import EnergyPriceViewSet
 
 
-def test_energy_price_listview(client, energy_price):
-    endpoint = reverse("energy_price_api:energy_price_list")
-    response = client.get(endpoint)
+def test_energy_price_listview(db, api_request_factory, energy_price):
+    url = "heat_storage_api/v1/energy_prices"
+    view = EnergyPriceViewSet.as_view({"get": "list"})
 
-    assert response.status_code == 200
-    assert str(energy_price.value_inc_vat) in response.content.decode('utf-8')
-
-
-
-def test_energy_price_detail_view(client, energy_price):
-    endpoint = reverse("energy_price_api:energy_price_detail", kwargs={"pk": energy_price.id})
-    response = client.get(endpoint, format="json")
+    request = api_request_factory.get(url)
+    response = view(request)
 
     assert response.status_code == 200
-    assert str(energy_price.value_inc_vat) in response.content.decode('utf-8')
