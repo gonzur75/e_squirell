@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'energy_prices.apps.EnergyPricesConfig',
     'storage_heater.apps.StorageHeaterConfig',
+    'energy_tracker.apps.EnergyTrackerConfig',
 ]
 
 MIDDLEWARE = [
