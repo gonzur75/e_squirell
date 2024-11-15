@@ -6,6 +6,7 @@ from energy_prices.models import EnergyPrice
 from faker import Faker
 from rest_framework.test import APIRequestFactory
 
+from energy_tracker.models import EnergyLog
 from storage_heater import MqttService
 from storage_heater.models import StorageHeater
 
@@ -49,3 +50,8 @@ def mock_client():
 @pytest.fixture
 def service(mock_client):
     return MqttService(mock_client)
+
+
+@pytest.fixture
+def energy_log(db):
+    return EnergyLog.objects.create(voltage_a=230, voltage_b=233, voltage_c=234, current_a=5000)
