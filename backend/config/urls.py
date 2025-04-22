@@ -16,9 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+# API versioning patterns
+api_v1_patterns = [
+    path('energy_prices/', include('energy_prices.urls')),
+    path('storage_heater/', include('storage_heater.urls')),
+    path('energy_tracker/', include('energy_tracker.urls')),
+]
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('energy_price_api/v1/', include('energy_prices.urls')),
-    path('heat_storage_api/v1/', include('storage_heater.urls')),
-    path('energy_tracker_api/v1/', include('energy_tracker.urls'))
-]
+    # New unified API structure
+    path('api/v1/', include(api_v1_patterns))
+    ]
