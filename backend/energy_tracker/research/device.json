@@ -1,0 +1,367 @@
+{
+        "name": "PC321-W-TY(Bi-Directional)",
+        "id": "bf5d3c93925ef776b4a3p7",
+        "key": "{Ix.Jt6}l5+OOg:M",
+        "mac": "c4:82:e1:e9:ab:6c",
+        "uuid": "7d329a3e0f2e5133",
+        "sn": "1001297970061D",
+        "category": "zndb",
+        "product_name": "PC321-W-TY(Bi-Directional)",
+        "product_id": "gqmmtjclqb7reg5p",
+        "biz_type": 0,
+        "model": "",
+        "sub": false,
+        "icon": "https://images.tuyaeu.com/smart/icon/ay1515026431018saCFs/22a786d9e0619bdcb43260f65b7915a4.png",
+        "mapping": {
+            "101": {
+                "code": "VoltageA",
+                "type": "Integer",
+                "values": {
+                    "unit": "V",
+                    "min": 0,
+                    "max": 5000,
+                    "scale": 1,
+                    "step": 1
+                }
+            },
+            "102": {
+                "code": "CurrentA",
+                "type": "Integer",
+                "values": {
+                    "unit": "A",
+                    "min": 0,
+                    "max": 3000000,
+                    "scale": 3,
+                    "step": 1
+                }
+            },
+            "103": {
+                "code": "ActivePowerA",
+                "type": "Integer",
+                "values": {
+                    "unit": "kW",
+                    "min": -6600000,
+                    "max": 6600000,
+                    "scale": 3,
+                    "step": 1
+                }
+            },
+            "104": {
+                "code": "PowerFactorA",
+                "type": "Integer",
+                "values": {
+                    "unit": "",
+                    "min": 0,
+                    "max": 100,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "105": {
+                "code": "ReactivePowerA",
+                "type": "Integer",
+                "values": {
+                    "unit": "var",
+                    "min": 0,
+                    "max": 660000,
+                    "scale": 0,
+                    "step": 1
+                }
+            },
+            "106": {
+                "code": "EnergyConsumedA",
+                "type": "Integer",
+                "values": {
+                    "unit": "Kw\u00b7h",
+                    "min": 0,
+                    "max": 2000000000,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "107": {
+                "code": "reverse_energy_a",
+                "type": "Integer",
+                "values": {
+                    "unit": "kW\u00b7h",
+                    "min": 0,
+                    "max": 2000000000,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "111": {
+                "code": "VoltageB",
+                "type": "Integer",
+                "values": {
+                    "unit": "V",
+                    "min": 0,
+                    "max": 5000,
+                    "scale": 1,
+                    "step": 1
+                }
+            },
+            "112": {
+                "code": "CurrentB",
+                "type": "Integer",
+                "values": {
+                    "unit": "A",
+                    "min": 0,
+                    "max": 3000000,
+                    "scale": 3,
+                    "step": 1
+                }
+            },
+            "113": {
+                "code": "ActivePowerB",
+                "type": "Integer",
+                "values": {
+                    "unit": "kW",
+                    "min": -6600000,
+                    "max": 6600000,
+                    "scale": 3,
+                    "step": 1
+                }
+            },
+            "114": {
+                "code": "PowerFactorB",
+                "type": "Integer",
+                "values": {
+                    "unit": "",
+                    "min": 0,
+                    "max": 100,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "115": {
+                "code": "ReactivePowerB",
+                "type": "Integer",
+                "values": {
+                    "unit": "var",
+                    "min": 0,
+                    "max": 660000,
+                    "scale": 0,
+                    "step": 1
+                }
+            },
+            "116": {
+                "code": "EnergyConsumedB",
+                "type": "Integer",
+                "values": {
+                    "unit": "Kw\u00b7h",
+                    "min": 0,
+                    "max": 2000000000,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "117": {
+                "code": "reverse_energy_b",
+                "type": "Integer",
+                "values": {
+                    "unit": "kW\u00b7h",
+                    "min": 0,
+                    "max": 2000000000,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "121": {
+                "code": "VoltageC",
+                "type": "Integer",
+                "values": {
+                    "unit": "V",
+                    "min": 0,
+                    "max": 5000,
+                    "scale": 1,
+                    "step": 1
+                }
+            },
+            "122": {
+                "code": "CurrentC",
+                "type": "Integer",
+                "values": {
+                    "unit": "A",
+                    "min": 0,
+                    "max": 3000000,
+                    "scale": 3,
+                    "step": 1
+                }
+            },
+            "123": {
+                "code": "ActivePowerC",
+                "type": "Integer",
+                "values": {
+                    "unit": "kW",
+                    "min": -6600000,
+                    "max": 6600000,
+                    "scale": 3,
+                    "step": 1
+                }
+            },
+            "124": {
+                "code": "PowerFactorC",
+                "type": "Integer",
+                "values": {
+                    "unit": "",
+                    "min": 0,
+                    "max": 100,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "125": {
+                "code": "ReactivePowerC",
+                "type": "Integer",
+                "values": {
+                    "unit": "var",
+                    "min": 0,
+                    "max": 660000,
+                    "scale": 0,
+                    "step": 1
+                }
+            },
+            "126": {
+                "code": "EnergyConsumedC",
+                "type": "Integer",
+                "values": {
+                    "unit": "Kw\u00b7h",
+                    "min": 0,
+                    "max": 2000000000,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "127": {
+                "code": "reverse_energy_c",
+                "type": "Integer",
+                "values": {
+                    "unit": "kW\u00b7h",
+                    "min": 0,
+                    "max": 2000000000,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "131": {
+                "code": "TotalEnergyConsumed",
+                "type": "Integer",
+                "values": {
+                    "unit": "Kw\u00b7h",
+                    "min": 0,
+                    "max": 2000000000,
+                    "scale": 2,
+                    "step": 1
+                }
+            },
+            "132": {
+                "code": "Current",
+                "type": "Integer",
+                "values": {
+                    "unit": "A",
+                    "min": 0,
+                    "max": 9000000,
+                    "scale": 3,
+                    "step": 1
+                }
+            },
+            "133": {
+                "code": "ActivePower",
+                "type": "Integer",
+                "values": {
+                    "unit": "kW",
+                    "min": -19800000,
+                    "max": 19800000,
+                    "scale": 3,
+                    "step": 1
+                }
+            },
+            "134": {
+                "code": "ReactivePower",
+                "type": "Integer",
+                "values": {
+                    "unit": "var",
+                    "min": 0,
+                    "max": 198000,
+                    "scale": 0,
+                    "step": 1
+                }
+            },
+            "135": {
+                "code": "Frequency",
+                "type": "Integer",
+                "values": {
+                    "unit": "Hz",
+                    "min": 0,
+                    "max": 80,
+                    "scale": 0,
+                    "step": 1
+                }
+            },
+            "136": {
+                "code": "Temperature",
+                "type": "Integer",
+                "values": {
+                    "unit": "\u00b0C",
+                    "min": -100,
+                    "max": 800,
+                    "scale": 1,
+                    "step": 1
+                }
+            },
+            "137": {
+                "code": "DeviceStatus",
+                "type": "Bitmap",
+                "values": {
+                    "label": [
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "11",
+                        "12",
+                        "13",
+                        "14",
+                        "15",
+                        "16"
+                    ],
+                    "maxlen": 17
+                }
+            },
+            "138": {
+                        "code": "voltage_phase_seq",
+                "type": "Enum",
+                "values": {
+                    "range": [
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5"
+                    ]
+                }
+            },
+            "139": {
+                "code": "reverse_energy_t",
+                "type": "Integer",
+                "values": {
+                    "unit": "kW\u00b7h",
+                    "min": 0,
+                    "max": 2000000000,
+                    "scale": 2,
+                    "step": 1
+                }
+            }
+        },
+        "ip": "192.168.8.114",
+        "version": "3.4"
+    }

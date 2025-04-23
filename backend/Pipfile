@@ -13,6 +13,7 @@ faker = "*"
 coverage = "*"
 pytest-cov = "*"
 paho-mqtt = "*"
+tinytuya = "*"
 
 [dev-packages]
 

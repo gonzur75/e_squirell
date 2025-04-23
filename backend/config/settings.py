@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from common.logging_config import configure_django_logging
 
 load_dotenv(dotenv_path='env/.env')  # take environment variables from .env.
 
@@ -79,7 +80,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -89,7 +89,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -109,7 +108,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -120,7 +118,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -140,3 +137,15 @@ MQTT_KEEPALIVE = 60
 MQTT_USER = os.environ.get('MQTT_USER')
 MQTT_PASSWORD = os.environ.get('MQTT_PASSWORD')
 MQTT_TOPIC = "heat_storage"
+
+# TinyTuya device settings
+# SM - SMART METER
+SMART_METER = {
+    'device_id': os.environ.get('SM_ID'),
+    'device_ip': os.environ.get('SM_IP'),
+    'local_key': os.environ.get('SM_KEY'),
+    'device_version': 3.4
+}
+
+# Configure logging
+LOGGING = configure_django_logging()
