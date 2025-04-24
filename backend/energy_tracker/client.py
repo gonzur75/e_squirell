@@ -1,17 +1,15 @@
+import logging
 import json
 import os
 from pathlib import Path
 from typing import Dict, Any, Optional
 
 import tinytuya
-from django.utils import timezone
+
 
 from energy_tracker.serializers import EnergyLogSerializer
 
-
-# TODO: Configure logging
-# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-# logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class PC321MeterClient:
@@ -42,10 +40,10 @@ class PC321MeterClient:
             if status and 'dps' in status:
                 return status
             else:
-                # logger.error(f"Failed to get device status: {status}")
+                logger.error(f"Failed to get device status: {status}")
                 return None
         except Exception as e:
-            # logger.exception(f"Error getting device status: {e}")
+            logger.exception(f"Error getting device status: {e}")
             return None
 
     @staticmethod
@@ -58,7 +56,7 @@ class PC321MeterClient:
         processed_data = {}
 
         if not status or 'dps' not in status:
-            # logger.error("Invalid status data format")
+            logger.error("Invalid status data format")
             return processed_data
 
         dps = status['dps']
@@ -66,9 +64,6 @@ class PC321MeterClient:
 
         with open(map_file, 'r') as file:
             dps_map = json.load(file)
-
-        # Log what we got from the device to help with debugging
-        # logger.info(f"Received DPS: {dps}")
 
         for dps_key, model_field in dps_map.items():
             if dps_key in dps and dps[dps_key] is not None:
@@ -113,8 +108,8 @@ class PC321MeterClient:
                 self.save_reading_to_db(processed_data)
                 return True
             else:
-                # logger.warning("No data was processed from device status")
+                logger.warning("No data was processed from device status")
                 return False
         except Exception as e:
-            # logger.exception(f"Error in fetch_and_save: {e}")
+            logger.exception(f"Error in fetch_and_save: {e}")
             return False

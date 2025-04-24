@@ -13,7 +13,8 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from common.logging_config import configure_django_logging
+
+from config.logging_.config import configure_django_logging
 
 load_dotenv(dotenv_path='env/.env')  # take environment variables from .env.
 

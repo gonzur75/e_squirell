@@ -1,0 +1,46 @@
+version = 1
+disable_existing_loggers = false
+
+[formatters.simple]
+format = "[%(levelname)s|%(module)s|L%(lineno)d] %(asctime)s: %(message)s"
+datefmt = "%Y-%m-%dT%H:%M:%S%z"
+
+[formatters.json]
+"()" = "config.logging_.custom_logger.JSONFormatter"
+
+[formatters.json.fmt_keys]
+level = "levelname"
+message = "message"
+timestamp = "timestamp"
+logger = "name"
+module = "module"
+function = "funcName"
+line = "lineno"
+thread_name = "threadName"
+
+[filters.require_debug_true]
+"()"= "django.utils.log.RequireDebugTrue"
+
+[handlers.consol]
+class = "logging.StreamHandler"
+level = "INFO"
+formatter = "simple"
+filters = ["require_debug_true"]
+#stream = "ext://sys.stderr"
+
+[handlers.file_json]
+class = "logging.handlers.RotatingFileHandler"
+level = "DEBUG"
+formatter = "json"
+filename = "./logs/app.toml"
+maxBytes = 10000000
+backupCount = 3
+
+[loggers.django]
+level = "INFO"
+handlers = ["consol"]
+propagate = true
+
+[loggers.config.custom]
+handlers = ["consol", "file_json"]
+level = "INFO"

@@ -7,7 +7,7 @@ from config import settings
 from energy_tracker.client import PC321MeterClient
 
 
-# logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
