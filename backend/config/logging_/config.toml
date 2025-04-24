@@ -43,4 +43,4 @@ propagate = true
 
 [loggers.config.custom]
 handlers = ["consol", "file_json"]
-level = "INFO"
+level = "WARNING"
