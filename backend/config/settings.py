@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd part
     'rest_framework',
+    'django_celery_beat',
     # locals
     'users.apps.UsersConfig',
     'energy_prices.apps.EnergyPricesConfig',
@@ -150,3 +151,22 @@ SMART_METER = {
 
 # Configure logging
 LOGGING = configure_django_logging()
+
+# Celery settings
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+# Add django-celery-beat to INSTALLED_APPS
+
+
+# Celery Beat schedule
+CELERY_BEAT_SCHEDULE = {
+    'fetch-energy-data-every-minute': {
+        'task': 'energy_tracker.tasks.fetch_and_save_energy_data',
+        'schedule': 60.0,  # every minute
+    },
+}

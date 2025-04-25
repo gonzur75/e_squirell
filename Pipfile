@@ -15,6 +15,10 @@ pytest-cov = "*"
 paho-mqtt = "*"
 tinytuya = "*"
 tomli = "*"
+celery = "*"
+redis = "*"
+django-celery-beat = "*"
+flower = "*"
 
 [dev-packages]
 

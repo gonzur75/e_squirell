@@ -7,6 +7,63 @@ services:
     ports:
       - 8000:8000
     restart: on-failure
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  celery-worker:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    command: celery -A config.celery  worker --loglevel=info
+    restart: on-failure
+
+  celery-beat:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    command: celery -A config.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel=info
+    restart: on-failure
+
+  flower:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - celery-worker
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    ports:
+      - 5555:5555
+    command: celery -A config.celery flower --port=5555
+    restart: on-failure
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+    restart: on-failure
+    volumes:
+      - redis-data:/data
   mosquitto:
     build:
       context: ./mqtt_broker
@@ -33,3 +90,5 @@ services:
 volumes:
   data:
     name: "mqtt-broker-data"
+  redis-data:
+    name: "redis-data"
