@@ -1,8 +1,9 @@
 import json
 import logging
 
-from config import settings
 
+from config import settings
+import paho.mqtt.client as mqtt
 from rest_framework.exceptions import ValidationError
 
 logging.basicConfig(level=logging.INFO)
@@ -24,11 +25,10 @@ class MqttService:
         self.client = client
 
     def connect(self):
-        """
-              Connect to the MQTT broker using the provided client credentials and settings.
-              Sets up the on_message and on_connect callbacks.
-              Logs the connection status.
-              """
+        """ Connect to the MQTT broker using the provided client credentials and settings.
+                 Sets up the on_message and on_connect callbacks.
+                 Logs the connection status.
+                 """
         try:
             self.client.username_pw_set(settings.MQTT_USER, settings.MQTT_PASSWORD)
             self.client.on_message = self.on_message
@@ -41,6 +41,7 @@ class MqttService:
             logger.info(f"Connected to Mqtt broker at {settings.MQTT_SERVER}")
         except Exception as error:
             logger.info(f"Unable to connect to Mqtt broker {settings.MQTT_SERVER}: error: {error} ")
+
 
     def on_connect(self, mqtt_client, user_data, flags, rc):
         """
@@ -58,8 +59,8 @@ class MqttService:
             except Exception as error:
                 logger.error(f"Failed to subscribe to Mqtt topic: {settings.MQTT_TOPIC}: error: {error} ")
 
-    def on_message(self, mqtt_client, userdata, msg):
 
+    def on_message(self, mqtt_client, userdata, msg):
         """
        Callback function that is called when a message is received from the broker.
 
@@ -70,15 +71,26 @@ class MqttService:
 
         from storage_heater.serializers import StorageHeaterSerializer
 
-        payload = json.loads(msg.payload.decode('utf-8'))
-        if payload['status']:
-            try:
-                serializer = StorageHeaterSerializer(data=payload)
+        try:
+            if msg.payload:
+                payload = json.loads(msg.payload.decode('utf-8'))
+                if payload and payload.get('status'):
+                    try:
+                        serializer = StorageHeaterSerializer(data=payload)
 
-                if serializer.is_valid(raise_exception=True):
-                    serializer.save()
-                    logger.info(f"{msg.topic} {msg.payload} has been saved to database")
-            except ValidationError as error:
-                logger.error(f'Failed validating data, with error message: {error},')
-            except AssertionError as error:
-                logger.error(f'Failed saving to db, with error message: {error},')
+                        if serializer.is_valid(raise_exception=True):
+                            serializer.save()
+                            logger.info(f"{msg.topic} {msg.payload} has been saved to database")
+                    except ValidationError as error:
+                        logger.error(f'Failed validating data, with error message: {error},')
+                    except AssertionError as error:
+                        logger.error(f'Failed saving to db, with error message: {error},')
+        except (AttributeError, json.JSONDecodeError) as e:
+            logger.error(f'Failed decoding message payload: {e}')
+    def start(self):
+        self.connect()
+        self.client.loop_start()
+
+
+mqtt_client = mqtt.Client()
+mqtt_service = MqttService(client=mqtt_client)
