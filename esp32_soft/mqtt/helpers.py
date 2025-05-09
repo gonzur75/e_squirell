@@ -18,9 +18,12 @@ class StorageHeaterClient(MQTTClient):
 
     def callback(self):
         def callback(topic, msg):
-            if msg.startswith('relay'):
-                decoded_message = msg.decode('ascii')
-                response = handle_heating(decoded_message[8:], int(decoded_message[6]))
-                self.publish(topic, json.dumps(response))
+            if msg:
+                data = json.loads(msg)
+                if data and data.get('heating_action'):
+                    message = data['heating_action']
+                    #  decoded_message = msg.decode('ascii')
+                    response = handle_heating(message[8:], int(message[6]))
+                    self.publish(topic, json.dumps(response))
 
         return callback
