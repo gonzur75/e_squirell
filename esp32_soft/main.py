@@ -24,7 +24,7 @@ def run():
             CLIENT.publish(TOPIC, payload)
             last_message = time.time()
         CLIENT.check_msg()
-        time.sleep(5)
+        time.sleep(1)
 
     return inner
 
