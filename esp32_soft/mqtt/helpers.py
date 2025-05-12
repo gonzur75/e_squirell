@@ -24,6 +24,6 @@ class StorageHeaterClient(MQTTClient):
                     message = data['heating_action']
                     #  decoded_message = msg.decode('ascii')
                     response = handle_heating(message[8:], int(message[6]))
-                    self.publish(topic, json.dumps(response))
+                    print(response)
 
         return callback

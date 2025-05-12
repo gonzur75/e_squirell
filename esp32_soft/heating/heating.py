@@ -21,7 +21,6 @@ def read_temperature():
 
 
 def handle_heating(relay_action, relay_number):
-    print(relay_number)
     max_relays = len(RELAYS_PIN)
     if relay_number > max_relays:
         return f'We only have: {max_relays} relays. Please try again!'
