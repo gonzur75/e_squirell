@@ -4,7 +4,7 @@ import logging
 
 from config import settings
 import paho.mqtt.client as mqtt
-from rest_framework.exceptions import ValidationError
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -68,25 +68,16 @@ class MqttService:
        :param userdata: The private user data as set in Client() or userdata_set().
        :param msg: An instance of MQTTMessage, which contains the topic and payload.
        """
-
-        from storage_heater.serializers import StorageHeaterSerializer
-
+        from storage_heater.tasks import process_mqtt_payload
         try:
             if msg.payload:
-                payload = json.loads(msg.payload.decode('utf-8'))
+                payload = json.loads(msg.payload)
                 if payload and payload.get('status'):
-                    try:
-                        serializer = StorageHeaterSerializer(data=payload)
+                    process_mqtt_payload.delay(payload)
 
-                        if serializer.is_valid(raise_exception=True):
-                            serializer.save()
-                            logger.info(f"{msg.topic} {msg.payload} has been saved to database")
-                    except ValidationError as error:
-                        logger.error(f'Failed validating data, with error message: {error},')
-                    except AssertionError as error:
-                        logger.error(f'Failed saving to db, with error message: {error},')
         except (AttributeError, json.JSONDecodeError) as e:
             logger.error(f'Failed decoding message payload: {e}')
+
     def start(self):
         self.connect()
         self.client.loop_start()
