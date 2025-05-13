@@ -13,15 +13,23 @@ WORKDIR /app
 
 COPY Pipfile Pipfile.lock ./
 
-RUN pip install pipenv  && pipenv install --system
+RUN pip install --no-cache-dir pipenv
+RUN pipenv install --system
+
 
 COPY . .
 
 EXPOSE 8000
 
-RUN addgroup --gid $GID user
-RUN adduser --disabled-password --gecos '' --uid $UID --gid $GID user
-USER user
+RUN if [ ${USER} != "root" ]; then \
+    apk add shadow && \
+    groupadd -f -g ${GID} ${USER} && \
+    useradd -m -g ${USER} -u ${UID} ${USER}; \
+    fi
+
+
+USER ${USER}
+
 
 
 CMD python manage.py migrate && python manage.py runserver 0.0.0.0:8000

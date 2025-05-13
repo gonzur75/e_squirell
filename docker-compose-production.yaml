@@ -2,6 +2,8 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile.prod
+
     volumes:
       - ./backend:/app
     ports:
@@ -21,6 +23,7 @@ services:
   celery-worker:
     build:
       context: ./backend
+      dockerfile: Dockerfile.prod
     volumes:
       - ./backend:/app
     depends_on:
@@ -40,6 +43,7 @@ services:
   celery-beat:
     build:
       context: ./backend
+      dockerfile: Dockerfile.prod
     volumes:
       - ./backend:/app
     depends_on:
@@ -67,8 +71,8 @@ services:
       resources:
         limits:
           cpus: '0.3'
-          memory: 150M
-    mem_limit: 50m
+          memory: 50M
+
   mosquitto:
     build:
       context: ./mqtt_broker
