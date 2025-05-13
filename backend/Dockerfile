@@ -10,10 +10,10 @@ ARG USER
 
 
 WORKDIR /app
+COPY requirements.txt .
 
-COPY Pipfile Pipfile.lock ./
-
-RUN pip install pipenv  && pipenv install --system
+RUN pip install uv && \
+    uv pip install -r requirements.txt
 
 COPY . .
 
@@ -24,4 +24,4 @@ RUN adduser --disabled-password --gecos '' --uid $UID --gid $GID user
 USER user
 
 
-CMD python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+CMD python manage.py migrate && uvicorn --host 0.0.0.0 --port 8000 config.asgi:application

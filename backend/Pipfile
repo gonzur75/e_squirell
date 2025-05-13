@@ -14,6 +14,8 @@ tomli = "*"
 celery = "*"
 redis = "*"
 django-celery-beat = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+pytz = "*"
 
 [dev-packages]
 pytest-django = "*"
@@ -21,6 +23,7 @@ pytest = "*"
 faker = "*"
 pytest-cov = "*"
 flower = "*"
+
 [requires]
 python_version = "3.11.9"
 python_full_version = "3.11.9"
