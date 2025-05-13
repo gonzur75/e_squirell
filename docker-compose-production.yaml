@@ -1,0 +1,104 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - 8000:8000
+    restart: on-failure
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 150M
+
+  celery-worker:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    command: celery -A config.celery  worker --concurrency=1 --loglevel=warning
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 150M
+
+  celery-beat:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    command: celery -A config.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel=warning
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 150M
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+    restart: on-failure
+    volumes:
+      - redis-data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 150M
+    mem_limit: 50m
+  mosquitto:
+    build:
+      context: ./mqtt_broker
+    volumes:
+      - type: bind
+        source: ./mqtt_broker/config/
+        target: /mosquitto/config/
+      - type: bind
+        source: ./mqtt_broker/log/
+        target: /mosquitto/log/
+      - type: volume
+        source: data
+        target: /mosquitto/data/
+    ports:
+      - target: 1883
+        published: 1883
+        protocol: tcp
+        mode: host
+      - target: 9001
+        published: 9001
+        protocol: tcp
+        mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 150M
+
+volumes:
+  data:
+    name: "mqtt-broker-data"
+  redis-data:
+    name: "redis-data"
