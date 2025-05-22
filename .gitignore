@@ -3,7 +3,7 @@
 
 **/*.pyc
 
-db.sqlite3
+backend/db/db.sqlite3
 
 env/.env
 

@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Union
 
 import pytz
 import tinytuya
@@ -81,7 +81,7 @@ class PC321MeterClient:
         return processed_data
 
     @staticmethod
-    def save_reading_to_db(data: Dict[str, Any]) -> dict | None:
+    def save_reading_to_db(data: Dict[str, Any]) -> Union[dict, None]:
         """
         Save the processed data to the Django model.
         Args:
@@ -133,7 +133,7 @@ RELAYS_MAP = {
 
 def process_smart_meter_data(data: dict):
     active_power = data["total_active_power"]
-    voltage_threshold = 2510
+    voltage_threshold = 2500
     safe_voltage_threshold = 2480
     # [('voltage_a', 2134),  ...]
     voltage_per_phase = sorted((x for x in data.items() if x[0] in ('voltage_a', 'voltage_b', 'voltage_c')),
@@ -157,7 +157,7 @@ def process_smart_meter_data(data: dict):
             for phase_name, _ in voltage_per_phase:
                 send_relay_action(phase_name, 'off')
 
-    elif 10 <= datetime.now(pytz.timezone('Europe/Warsaw')).hour < 16:
+    elif 10 <= datetime.now(pytz.timezone('Europe/Warsaw')).hour < 17:
         # stabilising voltage in case of high energy production in sumer when heating is not required
         # but it could be used for droping excesiv voltage that coses falownik to switchoff
         relays: list[str] = [x.name for x in StorageHeater._meta.get_fields() if x.name.startswith('relay_')]

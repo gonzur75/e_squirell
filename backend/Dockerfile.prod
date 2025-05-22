@@ -1,5 +1,4 @@
-
-FROM python:3.11.9-alpine
+FROM python:3.13.3-alpine
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONBUFFERED 1
@@ -8,26 +7,21 @@ ENV PYTHONBUFFERED 1
 
 WORKDIR /app
 
-COPY requirements.txt .
 
-RUN pip install uv && \
-    uv pip install -r requirements.txt --system
-
-
+COPY Pipfile Pipfile.lock ./
+RUN pip install --no-cache-dir pipenv  && pipenv install -v --system
 COPY . .
 
 EXPOSE 8000
-ARG UID
-ARG GID
-ARG USER
 
-RUN apk add shadow
-RUN groupadd -r django
-RUN useradd -r -g django django
+
+RUN addgroup -S django
+RUN adduser -S -G django django
 RUN chown -R django /app
 RUN chmod o+w /app/logs/app.toml
 
-CMD python manage.py migrate && uvicorn --host 0.0.0.0 --port 8000 --workers=1 config.asgi:application
+
+CMD python manage.py migrate
 
 
 

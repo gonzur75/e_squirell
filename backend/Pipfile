@@ -7,14 +7,13 @@ name = "pypi"
 django = "*"
 djangorestframework = "*"
 python-dotenv = "*"
-coverage = "*"
 paho-mqtt = "*"
 tinytuya = "*"
 tomli = "*"
 celery = "*"
 redis = "*"
 django-celery-beat = "*"
-uvicorn = {extras = ["standard"], version = "*"}
+uvicorn = "*"
 pytz = "*"
 
 [dev-packages]
@@ -23,7 +22,8 @@ pytest = "*"
 faker = "*"
 pytest-cov = "*"
 flower = "*"
+coverage = "*"
 
 [requires]
-python_version = "3.11.9"
-python_full_version = "3.11.9"
+python_version = "3.13"
+python_full_version = "3.13"

@@ -8,8 +8,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-      args: *common-variables
-
+#      args: *common-variables
+    user: django
+    command: uvicorn --host 0.0.0.0 --port 8000 config.asgi:application
     volumes:
       - ./backend:/app
     ports:
@@ -17,6 +18,8 @@ services:
     restart: on-failure
     depends_on:
       - redis
+    env_file:
+      - ./backend/env/.env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -52,7 +55,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-      args: *common-variables
+#      args: *common-variables
     volumes:
       - ./backend:/app
     depends_on:
@@ -76,11 +79,11 @@ services:
     restart: on-failure
     volumes:
       - redis-data:/data
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 50M
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.3'
+#          memory: 50M
 
   mosquitto:
     build:

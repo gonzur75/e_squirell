@@ -1,36 +1,28 @@
-services:
-  mosquitto:
-    build:
-      args:
-        GID: 1000
-        UID: 1000
-        USER: "marcin"
-    user: 1000:1000
-  backend:
-    build:
-      args:
-        GID: 1000
-        UID: 1000
-        USER: "marcin"
-    user: 1000:1000
-
-  celery-beat:
-    build:
-      args:
-        GID: 1000
-        UID: 1000
-        USER: "marcin"
-    user: 1000:1000
-
-  celery-worker:
-    build:
-      args:
-        GID: 1000
-        UID: 1000
-        USER: "marcin"
-    user: 1000:1000
-
-#  flower:
+#services:
+#  mosquitto:
+#    build:
+#      args:
+#        GID: 1000
+#        UID: 1000
+#        USER: "marcin"
+#    user: 1000:1000
+#  backend:
+#    build:
+#      args:
+#        GID: 1000
+#        UID: 1000
+#        USER: "marcin"
+#    user: 1000:1000
+#
+#  celery-beat:
+#    build:
+#      args:
+#        GID: 1000
+#        UID: 1000
+#        USER: "marcin"
+#    user: 1000:1000
+#
+#  celery-worker:
 #    build:
 #      args:
 #        GID: 1000

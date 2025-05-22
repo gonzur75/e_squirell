@@ -50,8 +50,8 @@ class EnergyLog(models.Model):
     total_reactive_power = energy_field(max_val=MAX_TOTAL_POWER)
     frequency = energy_field(max_val=80)
     unit_temp = energy_field(min_val=-100, max_val=800)
-    device_status = models.SmallIntegerField()
-    voltage_phase_seq = models.SmallIntegerField()
+    device_status = models.SmallIntegerField(default=-1)
+    voltage_phase_seq = models.SmallIntegerField(default=-1)
 
     class Meta:
         ordering = ["-timestamp"]

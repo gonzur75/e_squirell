@@ -2,10 +2,13 @@
 .vscode
 
 **/*.pyc
-db.sqlite3
 
-venv
+/venv
+
+env/.env
+env/.env-db
+
 .coverage
-.coveragerc
+.git
 
 
