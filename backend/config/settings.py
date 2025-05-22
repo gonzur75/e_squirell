@@ -81,6 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -169,4 +170,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'energy_tracker.tasks.fetch_and_save_energy_data',
         'schedule': 60.0,  # every minute
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
 }
