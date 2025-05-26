@@ -147,7 +147,7 @@ SMART_METER = {
     'device_id': os.environ.get('SM_ID'),
     'device_ip': os.environ.get('SM_IP'),
     'local_key': os.environ.get('SM_KEY'),
-    'device_version': 3.4
+    'device_version': 3.5
 }
 
 # Configure logging

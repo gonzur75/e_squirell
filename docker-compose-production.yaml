@@ -93,12 +93,15 @@ services:
       - type: bind
         source: ./mqtt_broker/config/
         target: /mosquitto/config/
+        read_only: false
       - type: bind
         source: ./mqtt_broker/log/
         target: /mosquitto/log/
+        read_only: false
       - type: volume
         source: data
         target: /mosquitto/data/
+        read_only: false
     ports:
       - target: 1883
         published: 1883
