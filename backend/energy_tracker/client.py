@@ -16,7 +16,7 @@ from storage_heater.models import StorageHeater
 
 logger = logging.getLogger(__name__)
 
-HEATING_REQUIRED = True
+HEATING_REQUIRED = False
 
 
 class PC321MeterClient:
@@ -137,7 +137,7 @@ def process_smart_meter_data(data: dict):
     safe_voltage_threshold = 2480
     # [('voltage_a', 2134),  ...]
     voltage_per_phase = sorted((x for x in data.items() if x[0] in ('voltage_a', 'voltage_b', 'voltage_c')),
-                               key=lambda x: x[1])
+                               key=lambda x: x[1], reverse=True)
     if HEATING_REQUIRED:
 
         if active_power > 2400:
