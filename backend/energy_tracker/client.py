@@ -142,23 +142,29 @@ def process_smart_meter_data(data: dict):
 
         if active_power > 2400:
             for phase_name, _ in voltage_per_phase[:3]:
-                send_relay_action(phase_name, 'on')
+                relay_number = get_relay_number(phase_name)
+                send_relay_action(relay_number, 'on')
             return None
         elif active_power > 1600:
             for phase_name, _ in voltage_per_phase[:2]:
-                send_relay_action(phase_name, 'on')
+                relay_number = get_relay_number(phase_name)
+                send_relay_action(relay_number, 'on')
             phase_name, _ = voltage_per_phase[2]
-            send_relay_action(phase_name, 'off')
+            relay_number = get_relay_number(phase_name)
+            send_relay_action(relay_number, 'off')
             return None
         elif active_power > 800:
             for phase_name, _ in voltage_per_phase[1:]:
-                send_relay_action(phase_name, 'off')
+                relay_number = get_relay_number(phase_name)
+                send_relay_action(relay_number, 'off')
             phase_name, _ = voltage_per_phase[0]
-            send_relay_action(phase_name, 'on')
+            relay_number = get_relay_number(phase_name)
+            send_relay_action(relay_number, 'on')
             return None
         else:
             for phase_name, _ in voltage_per_phase:
-                send_relay_action(phase_name, 'off')
+                relay_number = get_relay_number(phase_name)
+                send_relay_action(relay_number, 'off')
             return None
 
     elif 10 <= datetime.now(pytz.timezone('Europe/Warsaw')).hour < 17:
