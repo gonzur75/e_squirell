@@ -16,5 +16,10 @@ TEMPERATURE_SENSOR_PIN = 14
 TEMP_SENSOR = temp_sensor_setup(TEMPERATURE_SENSOR_PIN)
 CLIENT_ID = ubinascii.hexlify(machine.unique_id())
 
-SENSORS = {"temp_one": b'(\xff"\xc70\x17\x032'}
+SENSORS = {
+    "temp_one": b'(\x00\x1b\x94\x97\x03\x03\x18',
+    "temp_two": b'(\xff"\xc70\x17\x032',
+    "temp_three": b'(\x8a(\x94\x97\x04\x03\x99',
+    "temp_four": b'(\xff\x08\x101\x17\x03['
+}
 MESSAGE_INTERVAL = const(60)

@@ -16,8 +16,15 @@ def get_status():
 def read_temperature():
     TEMP_SENSOR.convert_temp()
     time.sleep_ms(750)  # time to allow for temp conversion
+    temps = {}
+    for name, address in SENSORS.items():
+        try:
+            temps[name] = TEMP_SENSOR.read_temp(address)
+        except Exception as e:
+            print(f'System returned error with message: {e}.')
+        time.sleep_ms(750)
 
-    return {name: TEMP_SENSOR.read_temp(address) for (name, address) in SENSORS.items()}
+    return temps
 
 
 def handle_heating(relay_action, relay_number):
