@@ -3,15 +3,15 @@ import time
 
 from config import CLIENT_ID, MESSAGE_INTERVAL, MQTT_SERVER, TOPIC
 from heating import get_status
-from helpers import restart_and_reconnect
+from helpers import log_and_restart
 from mqtt import StorageHeaterClient
 
 try:
     print('Setting up mqtt connection')
     CLIENT = StorageHeaterClient(CLIENT_ID, MQTT_SERVER, keepalive=60)
     CLIENT.setup(TOPIC)
-except OSError as e:
-    restart_and_reconnect(e)
+except OSError as error:
+    log_and_restart(error)
 
 
 def run():
@@ -34,4 +34,4 @@ while True:
     try:
         run_instance()
     except OSError as error:
-        restart_and_reconnect(error)
+        log_and_restart(error)

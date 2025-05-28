@@ -72,9 +72,12 @@ class MqttService:
         try:
             if msg.payload:
                 payload = json.loads(msg.payload)
-                if payload and payload.get('status'):
-                    process_mqtt_payload.delay(payload)
-
+                if payload:
+                    if payload.get('status'):
+                        process_mqtt_payload.delay(payload)
+                    if payload.get('log'):
+                        controller_logger = logging.getLogger('heater_controller')
+                        controller_logger.log(level=payload['log']['level'], msg=payload['log']['message'])
         except (AttributeError, json.JSONDecodeError) as e:
             logger.error(f'Failed decoding message payload: {e}')
 

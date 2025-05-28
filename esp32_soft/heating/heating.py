@@ -3,6 +3,7 @@ import time
 import machine
 
 from config import RELAYS_PIN, RELAYS, SENSORS, TEMP_SENSOR
+from helpers import log_and_restart
 
 
 def get_status():
@@ -32,9 +33,13 @@ def handle_heating(relay_action, relay_number):
     if relay_number > max_relays:
         return f'We only have: {max_relays} relays. Please try again!'
     relay_key = RELAYS[relay_number -1]
-    relay = machine.Pin(RELAYS_PIN[relay_key], machine.Pin.OUT)
-    preform_action = getattr(relay, relay_action)
-    preform_action()
+    try:
+        relay = machine.Pin(RELAYS_PIN[relay_key], machine.Pin.OUT)
+        preform_action = getattr(relay, relay_action)
+        preform_action()
+
+    except Exception as e:
+        log_and_restart(e)
     return {relay_number: relay_action}
 
 

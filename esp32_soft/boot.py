@@ -5,7 +5,7 @@ import network
 
 from config import PASSWORD, SSID
 from helpers import check_connection
-from helpers.helpers import restart_and_reconnect
+from helpers.helpers import log_and_restart
 
 esp.osdebug(None)
 gc.collect()
@@ -19,4 +19,4 @@ if not wlan.isconnected():
         wlan.connect(SSID, PASSWORD)
         check_connection(wlan)
     except OSError as error:
-        restart_and_reconnect(error)
+        log_and_restart(error)
