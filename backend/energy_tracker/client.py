@@ -133,8 +133,8 @@ RELAYS_MAP = {
 
 def process_smart_meter_data(data: dict):
     active_power = data["total_active_power"]
-    voltage_threshold = 2500
-    safe_voltage_threshold = 2480
+    voltage_threshold = 24950
+    safe_voltage_threshold = 2460
     # [('voltage_a', 2134),  ...]
     voltage_per_phase = sorted((x for x in data.items() if x[0] in ('voltage_a', 'voltage_b', 'voltage_c')),
                                key=lambda x: x[1], reverse=True)
