@@ -17,4 +17,4 @@ ARG UID
 ARG GID
 ARG USER
 
-CMD python manage.py makemigrations && python manage.py migrate && uvicorn --host 0.0.0.0 --port 8000 config.asgi:application --reload
+CMD python manage.py makemigrations && python manage.py migrate

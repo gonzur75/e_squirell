@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'energy_prices.apps.EnergyPricesConfig',
     'storage_heater.apps.StorageHeaterConfig',
     'energy_tracker.apps.EnergyTrackerConfig',
+    'core.apps.CoreConfig'
 ]
 
 MIDDLEWARE = [
@@ -179,4 +180,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 120
 
+}
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379/0",
+    }
 }
