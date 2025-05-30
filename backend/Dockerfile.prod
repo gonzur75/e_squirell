@@ -21,7 +21,7 @@ RUN chown -R django /app
 RUN chmod -R o+w /app/logs/app.toml
 
 
-CMD python manage.py migrate
+CMD python manage.py makemigrations && python manage.py migrate
 
 
 
