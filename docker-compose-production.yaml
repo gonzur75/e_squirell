@@ -49,6 +49,8 @@ services:
       dockerfile: Dockerfile.prod
       args: *common-variables
     user: django
+    env_file:
+      - ~/e_squirell/backend/env/.env
     volumes:
       - ./backend:/app
       - type: bind
@@ -70,11 +72,14 @@ services:
       context: ./backend
       dockerfile: Dockerfile.prod
 #      args: *common-variables
+    env_file:
+      - ~/e_squirell/backend/env/.env
     volumes:
       - ./backend:/app
       - type: bind
         source: ~/logs/app.toml
         target: /app/logs/app.toml
+
 
     depends_on:
       - redis
