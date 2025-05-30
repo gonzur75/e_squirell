@@ -15,7 +15,7 @@ services:
       - ./backend:/app
       - type: bind
         source: ~/logs/app.toml
-        target: /backend/logs/app.toml
+        target: /app/logs/app.toml
     ports:
       - 8000:8000
     restart: on-failure
@@ -53,7 +53,7 @@ services:
       - ./backend:/app
       - type: bind
         source: ~/logs/app.toml
-        target: /backend/logs/app.toml
+        target: /app/logs/app.toml
     depends_on:
       - redis
       - backend
@@ -74,7 +74,7 @@ services:
       - ./backend:/app
       - type: bind
         source: ~/logs/app.toml
-        target: /backend/logs/app.toml
+        target: /app/logs/app.toml
 
     depends_on:
       - redis
