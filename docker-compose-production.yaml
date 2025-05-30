@@ -19,7 +19,7 @@ services:
     depends_on:
       - redis
     env_file:
-      - ./backend/env/.env
+      - ~/e_squirell/backend/env/.env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
