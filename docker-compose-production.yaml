@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile.prod
 #      args: *common-variables
     user: django
-    command: python manage.py makemigrations && python manage.py migrate && uvicorn --host 0.0.0.0 --port 8000 config.asgi:application
+    command: uvicorn --host 0.0.0.0 --port 8000 config.asgi:application
     volumes:
       - ./backend:/app
       - type: bind
