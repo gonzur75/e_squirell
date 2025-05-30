@@ -13,21 +13,30 @@ services:
     command: uvicorn --host 0.0.0.0 --port 8000 config.asgi:application
     volumes:
       - ./backend:/app
+      - type: bind
+        source: ~/logs/app.toml
+        target: /backend/logs/app.toml
     ports:
       - 8000:8000
     restart: on-failure
     depends_on:
+      - postgres
       - redis
     env_file:
       - ~/e_squirell/backend/env/.env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: '0.3'
-#          memory: 150M
+
+  postgres:
+    image: postgres:17.5
+    volumes:
+      - backend_db_volume:/var/lib/postgresql/data
+    env_file:
+      - ~/e_squirell/backend/env/.env
+    ports:
+      - "5432:5432"
+
 
   celery-worker:
     build:
@@ -37,6 +46,9 @@ services:
     user: django
     volumes:
       - ./backend:/app
+      - type: bind
+        source: ~/logs/app.toml
+        target: /backend/logs/app.toml
     depends_on:
       - redis
       - backend
@@ -58,6 +70,10 @@ services:
 #      args: *common-variables
     volumes:
       - ./backend:/app
+      - type: bind
+        source: ~/logs/app.toml
+        target: /backend/logs/app.toml
+
     depends_on:
       - redis
       - backend
@@ -93,15 +109,12 @@ services:
       - type: bind
         source: ./mqtt_broker/config/
         target: /mosquitto/config/
-        read_only: false
       - type: bind
         source: ./mqtt_broker/log/
         target: /mosquitto/log/
-        read_only: false
       - type: volume
         source: data
         target: /mosquitto/data/
-        read_only: false
     ports:
       - target: 1883
         published: 1883
@@ -118,6 +131,7 @@ services:
 #          memory: 150M
 
 volumes:
+  backend_db_volume:
   data:
     name: "mqtt-broker-data"
   redis-data:

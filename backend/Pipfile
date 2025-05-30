@@ -15,6 +15,7 @@ redis = "*"
 django-celery-beat = "*"
 uvicorn = "*"
 pytz = "*"
+dj-database-url = "2.3.0"
 
 [dev-packages]
 pytest-django = "*"
