@@ -9,13 +9,8 @@ while ! nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
   echo "PostgreSQL started"
 
 python manage.py makemigrations
-echo "Running database migrations..."
-python manage.py makemigrations
-if [ $? -eq 0 ]; then
-    echo "No migrations needed"
-else
-    python manage.py migrate
-fi
+python manage.py migrate
+
 
 # Start the application
 echo "Starting application..."
