@@ -12,4 +12,5 @@ while ! nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
 python manage.py makemigrations
 python manage.py migrate
 
+
 exec "$@"
