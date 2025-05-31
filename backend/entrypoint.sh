@@ -10,8 +10,8 @@ while ! nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
 
 python manage.py makemigrations
 echo "Running database migrations..."
-if ! python manage.py migrate --check # Check if there are unapplied migrations
-then
+python manage.py makemigrations
+if [ $? -eq 0 ]; then
     echo "No migrations needed"
 else
     python manage.py migrate
