@@ -99,6 +99,8 @@ services:
     restart: on-failure
     volumes:
       - redis-data:/data
+    networks:
+      - backend_network
 
 
   mosquitto:
