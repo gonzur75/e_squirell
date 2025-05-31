@@ -10,7 +10,6 @@ services:
       dockerfile: Dockerfile.prod
 #      args: *common-variables
     user: django
-    command: uvicorn --host 0.0.0.0 --port 8000 config.asgi:application
     volumes:
       - ./backend:/app
       - type: bind

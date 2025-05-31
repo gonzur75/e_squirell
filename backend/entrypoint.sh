@@ -11,6 +11,7 @@ while ! nc -z "$POSTGRES_HOST" "$POSTGRES_PORT"; do
 
 python manage.py makemigrations
 python manage.py migrate
+python uvicorn --host 0.0.0.0 --port 8000 config.asgi:application
 
 
 exec "$@"
