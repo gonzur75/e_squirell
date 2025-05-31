@@ -19,10 +19,10 @@ RUN addgroup -S django
 RUN adduser -S -G django django
 RUN chown -R django /app
 RUN chmod -R o+w /app/logs/app.toml
-COPY ./entrypoint.sh .
+COPY ./entrypoint.sh ./entrypoint.sh
 RUN chmod -R +x /app/entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
 
 
