@@ -126,6 +126,8 @@ services:
         published: 9001
         protocol: tcp
         mode: host
+    networks:
+      - backend_network
 
 volumes:
   backend_db_volume:
