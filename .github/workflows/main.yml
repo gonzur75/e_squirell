@@ -1,0 +1,16 @@
+# when action will run
+on: 
+# trigers on push
+  push:
+    branches: [ deploy ]
+# run workflows manualy from Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    # sequence of task that will be executed
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the docker-compose stack
+        run: docker compose -f docker-compose-production.yaml up --build -d

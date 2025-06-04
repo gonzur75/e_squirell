@@ -18,10 +18,12 @@ EXPOSE 8000
 RUN addgroup -S django
 RUN adduser -S -G django django
 RUN chown -R django /app
-RUN chmod -R o+w /app/logs
+RUN chmod -R o+w /app/logs/app.toml
 
+COPY entrypoint.sh .
+RUN chmod a+x /app/entrypoint.sh
+RUN chown django:django entrypoint.sh
+USER django
 
-CMD python manage.py migrate
-
-
+ENTRYPOINT ["./entrypoint.sh"]
 
