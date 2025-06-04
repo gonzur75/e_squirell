@@ -1,22 +1,15 @@
 import logging
 import json
 import os
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, Union
 
-import pytz
 import tinytuya
-from django.conf import settings
 
 from energy_tracker.serializers import EnergyLogSerializer
-import paho.mqtt.publish as publish
-
-from storage_heater.models import StorageHeater
+from energy_tracker.utils import process_smart_meter_data
 
 logger = logging.getLogger(__name__)
-
-HEATING_REQUIRED = False
 
 
 class PC321MeterClient:
@@ -122,122 +115,3 @@ class PC321MeterClient:
             logger.exception(f"Error in fetch_and_save: {e}")
             return False
 
-
-RELAYS_MAP = {
-    "a": 2,
-    "b": 1,
-    "c": 3,
-}
-
-
-def stabilizing_voltage_is_required(voltage_per_phase):
-
-     # phases_with_voltage_over_threshold = [x for x in voltage_per_phase if x[1] > voltage_threshold]
-    pass
-
-
-def process_smart_meter_data(data: dict):
-    # negate value as smart_meter returns negative if production is more than consumption
-    active_power = -data["total_active_power"]
-    voltage_threshold = 2495
-    safe_voltage_threshold = 2460
-    # [('voltage_a', 2134),  ...]
-
-    voltage_per_phase: list[tuple[str, int]] = sorted(
-        (x for x in data.items() if x[0] in ('voltage_a', 'voltage_b', 'voltage_c')),
-        key=lambda x: x[1], reverse=True)
-    relay_numbers_matched_to_phases = tuple(get_relay_number(phase[0]) for phase in voltage_per_phase)
-
-    if 8 <= datetime.now(pytz.timezone('Europe/Warsaw')).hour < 18:
-    # stabilising voltage in case of high energy production in sumer when heating is not required
-    # but it could be used for droping excesiv voltage that coses falownik to switchoff
-        relays: list[str] = [x.name for x in StorageHeater._meta.get_fields() if x.name.startswith('relay_')]
-        storage_heater_relays = StorageHeater.objects.values(*relays).first()
-        one_kw_heaters_on = {k: v for k, v in list(storage_heater_relays.items())[:3] if v is True}
-        two_kw_heaters_on = {k: v for k, v in list(storage_heater_relays.items())[3:] if v is True}
-
-        phases_with_voltage_over_threshold = [x for x in voltage_per_phase if x[1] > voltage_threshold]
-        phases_with_voltage_under_safe_threshold = all([x for x in voltage_per_phase if x[1] < safe_voltage_threshold])
-
-    if phases_with_voltage_over_threshold:
-        if one_kw_heaters_on and not two_kw_heaters_on:
-            match_one_kw_heaters_with_overvoltage_phases = []
-            for heater in one_kw_heaters_on:
-                for phase, _ in phases_with_voltage_over_threshold:
-                    phase_number = get_relay_number(phase)
-                    if f"relay_{phase_number}" in heater:
-                        match_one_kw_heaters_with_overvoltage_phases.append(phase_number)
-                        break
-            if len(match_one_kw_heaters_with_overvoltage_phases) == 1:
-                phase_number = match_one_kw_heaters_with_overvoltage_phases[0]
-                send_relay_action(phase_number + 3, 'on')
-                send_relay_action(phase_number, 'off')
-                return None
-
-            elif not match_one_kw_heaters_with_overvoltage_phases:
-                for phase, voltage in phases_with_voltage_over_threshold:
-                    relay_number = get_relay_number(phase)
-                    send_relay_action(relay_number, 'on')
-                    return None
-                return None
-
-            elif len(match_one_kw_heaters_with_overvoltage_phases) > 1:
-                turn_off_relays(voltage_per_phase)
-                return None
-            return None
-
-        elif one_kw_heaters_on and two_kw_heaters_on:
-            turn_off_relays(voltage_per_phase)
-            return None
-
-        else:
-            for phase, voltage in phases_with_voltage_over_threshold:
-                relay_number = get_relay_number(phase)
-                send_relay_action(relay_number, 'on')
-                return None
-            return None
-
-    if phases_with_voltage_under_safe_threshold:
-        turn_off_relays(voltage_per_phase)
-        return None
-
-
-    if HEATING_REQUIRED:
-
-        if active_power > 2400:
-            handle_relay_states(3, relay_numbers_matched_to_phases)
-
-        elif active_power > 1600:
-            handle_relay_states(2, relay_numbers_matched_to_phases)
-
-        elif active_power > 800:
-            handle_relay_states(1, relay_numbers_matched_to_phases)
-
-    return False
-
-
-def handle_relay_states(relays_on: int, relay_list: tuple[int, ...]):
-    """
-    Updates relay states
-    """
-    for relay_number in relay_list[:relays_on]:
-        send_relay_action(relay_number, 'on')
-
-    if len(relay_list) > relays_on:
-        for relay_number in relay_list[relays_on:]:
-            send_relay_action(relay_number, 'off')
-    return True
-
-
-def send_relay_action(relay_number, relay_action="on"):
-    payload = {"heating_action": f'relay_{relay_number}_{relay_action}'}
-    publish.single(settings.MQTT_TOPIC, json.dumps(payload), hostname=settings.MQTT_SERVER)
-
-
-def get_relay_number(phase_name: str) -> int:
-    return RELAYS_MAP[phase_name[-1]]
-
-
-def turn_off_relays(phases):
-    for phase, _ in phases:
-        send_relay_action(get_relay_number(phase), 'off')
