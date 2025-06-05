@@ -127,8 +127,8 @@ def process_smart_meter_data(data: dict):
                 send_relay_action(one_kw_heaters_on[0], RelayAction.OFF)
 
 
-            elif len(one_kw_heaters_on) < len(phases_to_stabilize):
-                turn_on_relays(set(phases_to_stabilize).difference(one_kw_heaters_on))
+            elif relays_on := set(phases_to_stabilize).difference(one_kw_heaters_on):
+                turn_on_relays(relays_on)
 
         else:
             turn_on_relays(phases_to_stabilize)
