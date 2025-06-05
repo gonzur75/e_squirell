@@ -190,7 +190,7 @@ def send_relay_action(relay_number: int, relay_action: RelayAction = RelayAction
 
     payload = {"heating_action": f'relay_{relay_number}_{relay_action}'}
     publish.single(settings.MQTT_TOPIC, json.dumps(payload), hostname=settings.MQTT_SERVER)
-    return None
+
 
 
 def turn_off_relays(relays: Collection[int]) -> None:

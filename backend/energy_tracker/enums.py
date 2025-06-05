@@ -23,18 +23,18 @@ class BaseEnum(Enum):
             enum_name = name.upper()
             return cls[enum_name].value
         except KeyError:
-            enum_type = cls.__name__.lower()
+            enum_type = cls.__name__
             raise ValueError(f"Invalid {enum_type} identifier: '{name}'. "
-                             f"Valid values are: {[e.name for e in cls]}")
+                             f"Valid values are: {[e.name.lower() for e in cls]}")
 
 
 class RelayNumberMap(BaseEnum):
-    RELAY_1 = 1
-    RELAY_2 = 2
-    RELAY_3 = 3
-    RELAY_4 = 4
-    RELAY_5 = 5
-    RELAY_6 = 6
+    RELAY_ONE = 1
+    RELAY_TWO = 2
+    RELAY_THREE = 3
+    RELAY_FOUR = 4
+    RELAY_FIVE = 5
+    RELAY_SIX = 6
 
     @classmethod
     def name_to_number(cls, relay_name: str) -> int:
