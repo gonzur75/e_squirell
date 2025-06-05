@@ -57,7 +57,7 @@ def get_phases_below_safe_voltage(voltage_readings: Sequence[tuple[str, float]])
     Returns:
         Tuple of relay numbers corresponding to phases with voltage below safe threshold
     """
-    safe_voltage_threshold = settings.safe_voltage_threshold
+    safe_voltage_threshold = project_settings.safe_voltage_threshold
 
     unsafe_phases = tuple(
         PhaseRelayMap.name_to_number(phase_name)
