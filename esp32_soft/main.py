@@ -37,5 +37,5 @@ run_instance = run()
 while True:
     try:
         run_instance()
-    except OSError as error:
+    except Exception as error:
         log_and_restart(error)
