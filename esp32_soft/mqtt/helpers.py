@@ -1,9 +1,11 @@
 import json
 
+from machine import WDT
 from umqtt.robust import MQTTClient
 from config import TOPIC
 from heating import handle_heating
 
+wdt = WDT(timeout=10000)
 
 class StorageHeaterClient(MQTTClient):
 
@@ -25,5 +27,5 @@ class StorageHeaterClient(MQTTClient):
                     #  decoded_message = msg.decode('ascii')
                     response = handle_heating(message[8:], int(message[6]))
                     print(response)
-
+                wdt.feed()
         return callback

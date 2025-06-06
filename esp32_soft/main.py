@@ -20,11 +20,12 @@ def run():
 
     def inner():
         nonlocal last_message
-        if (time.time() - last_message) > MESSAGE_INTERVAL:
-            gc.collect()
+        now = time.time()
+        if (now - last_message) > MESSAGE_INTERVAL:
             payload = json.dumps(get_status())
             CLIENT.publish(TOPIC, payload)
-            last_message = time.time()
+            last_message = now
+            gc.collect()
         CLIENT.check_msg()
         time.sleep(1)
 
