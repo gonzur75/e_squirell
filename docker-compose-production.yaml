@@ -40,7 +40,7 @@ services:
       - "5432:5432"
     networks:
       - backend_network
-
+    restart: on-failure
 
 
   celery-worker:
@@ -79,8 +79,6 @@ services:
       - type: bind
         source: ~/logs/app.toml
         target: /app/logs/app.toml
-
-
     depends_on:
       - redis
       - backend
@@ -126,6 +124,7 @@ services:
         published: 9001
         protocol: tcp
         mode: host
+    restart: on-failure
     networks:
       - backend_network
 
