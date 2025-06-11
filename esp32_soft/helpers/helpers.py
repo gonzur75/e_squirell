@@ -17,7 +17,7 @@ def check_connection(wlan, max_retries=200):
             print(f'\nConnected. \nNetwork config: {wlan.ifconfig()}')
             time.sleep(1)
             return True
-        time.sleep(1)
+        time.sleep_ms(1000)
         print('.', end='')
 
     raise OSError(f'Failed to connect to {wlan.config("ssid")}, exceeded max_retries {max_retries}')
@@ -38,6 +38,6 @@ def log_and_restart(error):
     from config import TOPIC
     CLIENT.publish(TOPIC, json.dumps(response))
     print(f'System returned error with message: {error}. \nUnit will restart')
-    time.sleep(5)
+    time.sleep_ms(5000)
 
     machine.reset()

@@ -2,14 +2,20 @@ import gc
 import json
 import time
 
+from machine import WDT
+import micropython
+
 from config import CLIENT_ID, MESSAGE_INTERVAL, MQTT_SERVER, TOPIC
 from heating import get_status
 from helpers import log_and_restart
 from mqtt import StorageHeaterClient
 
+gc.enable()
+wdt = WDT(timeout=50000)
+
 try:
     print('Setting up mqtt connection')
-    CLIENT = StorageHeaterClient(CLIENT_ID, MQTT_SERVER, keepalive=60)
+    CLIENT = StorageHeaterClient(CLIENT_ID, MQTT_SERVER, keepalive=90)
     CLIENT.setup(TOPIC)
 except OSError as error:
     log_and_restart(error)
@@ -25,9 +31,11 @@ def run():
             payload = json.dumps(get_status())
             CLIENT.publish(TOPIC, payload)
             last_message = now
+            print(gc.mem_free())
             gc.collect()
         CLIENT.check_msg()
-        time.sleep(1)
+        time.sleep_ms(1000)
+        wdt.feed()
 
 
     return inner
@@ -39,3 +47,4 @@ while True:
         run_instance()
     except Exception as error:
         log_and_restart(error)
+

@@ -21,9 +21,9 @@ def read_temperature():
     for name, address in SENSORS.items():
         try:
             temps[name] = TEMP_SENSOR.read_temp(address)
+            time.sleep_ms(750)
         except Exception as e:
-            print(f'System returned error with message: {e}.')
-        time.sleep_ms(750)
+            log_and_restart(e)
 
     return temps
 
