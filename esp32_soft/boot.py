@@ -5,7 +5,7 @@ import network
 
 from config import PASSWORD, SSID
 from helpers import check_connection
-from helpers.helpers import log_and_restart
+from helpers import log_and_restart
 
 esp.osdebug(None)
 gc.collect()

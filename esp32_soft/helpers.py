@@ -29,15 +29,17 @@ def temp_sensor_setup(sensor_pin: int):
     return ds18x20.DS18X20(one_wire)
 
 
-def log_and_restart(error):
+def log_over_mqtt(error):
     response = {"log": {
         "level": 50,
-        "message": f"Error in heating: {error}"
+        "message": f"Error: {error}"
     }}
     from main import CLIENT
     from config import TOPIC
     CLIENT.publish(TOPIC, json.dumps(response))
     print(f'System returned error with message: {error}. \nUnit will restart')
-    time.sleep_ms(5000)
 
+
+def log_and_restart(error):
+    log_over_mqtt(error)
     machine.reset()
