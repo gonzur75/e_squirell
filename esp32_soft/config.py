@@ -7,6 +7,7 @@ from helpers import load_secrets, temp_sensor_setup
 SECRETS = load_secrets('secrets.json')
 SSID = SECRETS["wifi_credentials"]['ssid']
 PASSWORD = SECRETS["wifi_credentials"]['password']
+WEBREPL_PASSWORD = SECRETS["webrepl_credentials"]['password']
 MQTT_SERVER = SECRETS['mqtt']['server']
 # have to be in order to work correctly
 RELAYS = ('relay_one', 'relay_two', 'relay_three', 'relay_four', 'relay_five', 'relay_six')
