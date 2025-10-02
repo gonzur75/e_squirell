@@ -140,9 +140,10 @@ def process_smart_meter_data(data: dict):
 
         if active_power >= 0:
             x = active_power // 800
-            update_relay_sequence(x, relay_numbers_matched_to_phases)
-        else:
-            x = ((active_power - 200) // 800)
+            if x > 0:
+                update_relay_sequence(x, relay_numbers_matched_to_phases)
+        elif active_power < 300:
+            x = active_power // 800
             active_1kw_relays = check_heating_state()[0]
             turn_off_relays(active_1kw_relays[x:])
 
