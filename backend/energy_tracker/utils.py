@@ -144,7 +144,7 @@ def process_smart_meter_data(data: dict):
         else:
             x = (active_power - 200 // 800)
             active_1kw_relays = check_heating_state()[0]
-            turn_off_relays(active_1kw_relays[x])
+            turn_off_relays(active_1kw_relays[x:])
 
     return True
 
