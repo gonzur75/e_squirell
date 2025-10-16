@@ -192,3 +192,7 @@ CACHES = {
         "LOCATION": "redis://redis:6379/0",
     },
 }
+
+DATABRICKS_INSTANCE = os.environ.get("DATABRICKS_INSTANCE", "")
+DATABRICKS_TOKEN = os.environ.get("DATABRICKS_TOKEN", "")
+DBFS_PATH = 'dbfs:/Volumes/squireel/default/raw/'

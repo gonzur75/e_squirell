@@ -17,6 +17,8 @@ uvicorn = "*"
 pytz = "*"
 dj-database-url = "2.3.0"
 psycopg2-binary = "2.9.10"
+pandas = "*"
+databricks-sdk = "*"
 
 [dev-packages]
 pytest-django = "*"
