@@ -5,7 +5,7 @@ from storage_heater.models import StorageHeater
 class StorageHeaterSerializer(serializers.ModelSerializer):
     class Meta:
         model = StorageHeater
-        fields = ("time_stamp",
+        fields = ("timestamp",
                   "relay_one",
                   "relay_two",
                   "relay_three",
