@@ -138,14 +138,14 @@ def process_smart_meter_data(data: dict):
 
     if heating_required:
 
-        if active_power > 2400:
-            update_relay_sequence(3, relay_numbers_matched_to_phases)
-
-        elif active_power > 1600:
-            update_relay_sequence(2, relay_numbers_matched_to_phases)
-
-        elif active_power > 800:
-            update_relay_sequence(1, relay_numbers_matched_to_phases)
+        if active_power >= 0:
+            x = active_power // 800
+            if x > 0:
+                update_relay_sequence(x, relay_numbers_matched_to_phases)
+        elif active_power < 300:
+            x = active_power // 800
+            active_1kw_relays = check_heating_state()[0]
+            turn_off_relays(active_1kw_relays[x:])
 
     return True
 
@@ -190,7 +190,6 @@ def send_relay_action(relay_number: int, relay_action: RelayAction = RelayAction
 
     payload = {"heating_action": f'relay_{relay_number}_{relay_action}'}
     publish.single(settings.MQTT_TOPIC, json.dumps(payload), hostname=settings.MQTT_SERVER)
-
 
 
 def turn_off_relays(relays: Collection[int]) -> None:
