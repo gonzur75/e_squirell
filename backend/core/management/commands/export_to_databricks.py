@@ -54,6 +54,9 @@ class Command(BaseCommand):
 
         df = pd.DataFrame(list(queryset))
 
+        print(model.objects.all().count())
+        print(len(df))
+
         buffer = io.BytesIO()
         df.to_csv(buffer)
         buffer.seek(0)
