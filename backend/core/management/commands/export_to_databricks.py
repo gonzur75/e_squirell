@@ -57,6 +57,8 @@ class Command(BaseCommand):
         buffer = io.BytesIO()
         df.to_csv(buffer)
         buffer.seek(0)
+        buffer_size = buffer.getbuffer().nbytes
+        print(f"Buffer size: {buffer_size} bytes")
 
         w = WorkspaceClient(
             host=settings.DATABRICKS_INSTANCE,
