@@ -1,6 +1,4 @@
 import io
-import tempfile
-import os
 from datetime import timedelta
 
 import pandas as pd
@@ -56,18 +54,10 @@ class Command(BaseCommand):
 
         df = pd.DataFrame(list(queryset))
 
-        print(model.objects.all().count())
-        print(len(df))
+        buffer = io.BytesIO()
+        df.to_csv(buffer)
+        buffer.seek(0)
 
-        # buffer = io.BytesIO()
-        # df.to_csv(buffer)
-        # buffer.seek(0)
-        # buffer_size = buffer.getbuffer().nbytes
-        # print(f"Buffer size: {buffer_size} bytes")
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as tmp_file:
-            df.to_csv(tmp_file.name, index=False)
-            tmp_file_path = tmp_file.name
 
         w = WorkspaceClient(
             host=settings.DATABRICKS_INSTANCE,
@@ -75,10 +65,7 @@ class Command(BaseCommand):
         )
 
         try:
-            # Upload file to DBFS using Databricks SDK
-            with open(tmp_file_path, 'rb') as f:
-                w.dbfs.upload(path=full_dbfs_path, src=f, overwrite=True)
-            # w.dbfs.upload(path=full_dbfs_path, src=buffer, overwrite=True)
+            w.dbfs.upload(path=full_dbfs_path, src=buffer, overwrite=True)
             self.stdout.write(self.style.SUCCESS(f'Uploaded csv to Databricks DBFS: {full_dbfs_path}'))
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Failed to upload file to Databricks DBFS: {e}"))
