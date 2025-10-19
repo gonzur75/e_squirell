@@ -35,6 +35,7 @@ class Command(BaseCommand):
             full_dbfs_path = f"{settings.DBFS_PATH}/{model_name}_{now}.csv"
         else:
             queryset = model.objects.all().values()
+            full_dbfs_path = f"{settings.DBFS_PATH}/{model_name}_main.csv"
 
         df = pd.DataFrame(list(queryset))
 

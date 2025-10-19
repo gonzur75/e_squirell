@@ -17,7 +17,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from config.logging_.config import configure_django_logging
-
+from celery.schedules import crontab
 
 load_dotenv(dotenv_path='env/.env')  # take environment variables from .env.
 
@@ -89,7 +89,6 @@ ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 
 
 DATABASE_URL = os.environ.get('DB_CONNECTION_STRING')
@@ -175,6 +174,10 @@ CELERY_BEAT_SCHEDULE = {
     'fetch-energy-data-every-minute': {
         'task': 'energy_tracker.tasks.fetch_and_save_energy_data',
         'schedule': 60.0,  # every minute
+    },
+    'export-energy-logs-at-midnight': {
+        'task': 'core.tasks.export_to_databricks_task',
+        'schedule': crontab(minute=0, hour=0),
     },
 }
 
