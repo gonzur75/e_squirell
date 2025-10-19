@@ -65,7 +65,9 @@ class Command(BaseCommand):
 
         try:
             # Upload file to DBFS using Databricks SDK
-            w.dbfs.upload(path=full_dbfs_path, src=buffer, overwrite=True)
+            with buffer as stream:
+                w.dbfs.upload(path=full_dbfs_path, src=stream, overwrite=True)
+            # w.dbfs.upload(path=full_dbfs_path, src=buffer, overwrite=True)
             self.stdout.write(self.style.SUCCESS(f'Uploaded csv to Databricks DBFS: {full_dbfs_path}'))
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Failed to upload file to Databricks DBFS: {e}"))
