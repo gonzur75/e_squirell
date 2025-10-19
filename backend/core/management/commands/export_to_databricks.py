@@ -11,6 +11,21 @@ from config import settings
 
 
 class Command(BaseCommand):
+    """
+    Exports a Django model queryset to a CSV file and uploads it to Databricks DBFS.
+
+    Usage:
+        python manage.py export_to_databricks --model app_label.ModelName
+        python manage.py export_to_databricks --model app_label.ModelName --last_day
+
+    Arguments:
+        --model Django model to export in the format app_label.ModelName
+        --last_day (optional) Limit export to objects from the last 24 hours
+
+    Example:
+        python manage.py export_to_databricks --model core.MyModel
+        python manage.py export_to_databricks --model core.MyModel --last_day
+    """
     help = 'Export core.models.MyModel queryset to Parquet and upload to Databricks DBFS'
 
     def add_arguments(self, parser):
@@ -31,8 +46,8 @@ class Command(BaseCommand):
             return
 
         if options['last_day']:
-            queryset = model.objects.filter(timestamp=last_24h).values()
-            full_dbfs_path = f"{settings.DBFS_PATH}/{model_name}_{now}.csv"
+            queryset = model.objects.filter(timestamp__gte=last_24h).values()
+            full_dbfs_path = f"{settings.DBFS_PATH}/{model_name}_{now:%Y%m%d_%H%M%S}.csv"
         else:
             queryset = model.objects.all().values()
             full_dbfs_path = f"{settings.DBFS_PATH}/{model_name}_main.csv"
