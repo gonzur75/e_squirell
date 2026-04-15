@@ -113,6 +113,16 @@ services:
     networks:
       - backend_network
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - backend_network
+
 volumes:
   backend_db_volume:
   data:

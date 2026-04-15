@@ -200,3 +200,4 @@ DATABRICKS_INSTANCE = os.environ.get("DATABRICKS_INSTANCE", "")
 DATABRICKS_TOKEN = os.environ.get("DATABRICKS_TOKEN", "")
 DBFS_PATH = 'dbfs:/Volumes/squireel/default/raw'
 
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', '')

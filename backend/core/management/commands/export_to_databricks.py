@@ -4,6 +4,7 @@ from datetime import timedelta
 import pandas as pd
 from databricks.sdk import WorkspaceClient
 from django.apps import apps
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -68,4 +69,12 @@ class Command(BaseCommand):
             w.dbfs.upload(path=full_dbfs_path, src=buffer, overwrite=True)
             self.stdout.write(self.style.SUCCESS(f'Uploaded csv to Databricks DBFS: {full_dbfs_path}'))
         except Exception as e:
+            # send_mail(
+            #     subject="Databricks export FAILED",
+            #     message=f"Export model {model_name} failed.\n\nError:\n{str(e)}",
+            #     from_email='esquirel_error@localhost',
+            #     recipient_list=[settings.ADMIN_EMAIL],
+            #     fail_silently=False,
+            # )
+
             self.stdout.write(self.style.ERROR(f"Failed to upload file to Databricks DBFS: {e}"))
