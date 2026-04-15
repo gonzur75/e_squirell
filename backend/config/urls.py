@@ -21,6 +21,7 @@ api_v1_patterns = [
     path('energy_prices/', include('energy_prices.urls')),
     path('storage_heater/', include('storage_heater.urls')),
     path('energy_tracker/', include('energy_tracker.urls')),
+    path('core/', include('core.urls')),
 ]
 
 urlpatterns = [

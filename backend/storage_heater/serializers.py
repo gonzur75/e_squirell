@@ -16,3 +16,4 @@ class StorageHeaterSerializer(serializers.ModelSerializer):
                   "temp_two",
                   "temp_three",
                   "temp_four",)
+
