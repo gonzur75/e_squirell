@@ -8,11 +8,12 @@ import {
   Title,
   Tooltip,
   Legend,
-  BarElement
+  BarElement,
+  Filler
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
 import api from '../api';
-import { Zap, Activity, BatteryCharging } from 'lucide-react';
+import { Zap, Activity, BatteryCharging, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 
 ChartJS.register(
   CategoryScale,
@@ -22,7 +23,8 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 export default function EnergyTrackerChart() {
@@ -30,13 +32,9 @@ export default function EnergyTrackerChart() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch data with hourly resolution
     api.get('/energy_tracker/?resolution=hourly')
       .then(response => {
-        // Our endpoint returns an array or a paginated object if using pagination.
-        // Assuming paginated `results` based on DRF standard
         const results = response.data.results || response.data;
-        // Reverse array to show oldest to newest left to right
         setData([...results].reverse());
         setLoading(false);
       })
@@ -47,56 +45,76 @@ export default function EnergyTrackerChart() {
   }, []);
 
   if (loading) {
-    return <div className="h-64 flex items-center justify-center text-slate-500 animate-pulse">Loading Energy Data...</div>;
+    return (
+      <div className="h-96 flex flex-col items-center justify-center space-y-4">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-slate-400 font-medium animate-pulse">Synchronizing Grid Data...</p>
+      </div>
+    );
   }
 
-  // Format labels nicely
-  const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+  const latest = data.length > 0 ? data[data.length - 1] : null;
+  const netPower = latest ? (latest.total_active_power) : 0;
+  const consumption = netPower > 0 ? netPower : 0;
+  const production = netPower < 0 ? Math.abs(netPower) : 0;
+
+  const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
   const powerData = {
     labels,
     datasets: [
       {
-        label: 'Phase L1 Power',
-        data: data.map(d => d.active_power_a),
-        borderColor: '#ef4444', // Red
-        backgroundColor: 'rgba(239, 68, 68, 0.5)',
-        tension: 0.4
-      },
-      {
-        label: 'Phase L2 Power',
-        data: data.map(d => d.active_power_b),
-        borderColor: '#eab308', // Yellow
-        backgroundColor: 'rgba(234, 179, 8, 0.5)',
-        tension: 0.4
-      },
-      {
-        label: 'Phase L3 Power',
-        data: data.map(d => d.active_power_c),
-        borderColor: '#3b82f6', // Blue
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-        tension: 0.4
+        label: 'Net Power (W)',
+        data: data.map(d => d.total_active_power),
+        borderColor: (context) => {
+           const chart = context.chart;
+           const {ctx, chartArea} = chart;
+           if (!chartArea) return null;
+           const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+           gradient.addColorStop(0, '#f43f5e'); // Rose (Import)
+           gradient.addColorStop(0.5, '#cbd5e1'); // Neutral
+           gradient.addColorStop(1, '#10b981'); // Emerald (Export)
+           return gradient;
+        },
+        backgroundColor: 'rgba(59, 130, 246, 0.05)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        borderWidth: 3
       }
     ]
   };
-  
-  const currentData = {
+
+  const phaseData = {
     labels,
     datasets: [
       {
-        label: 'L1 Current',
-        data: data.map(d => d.current_a / 1000), // Assuming mA to A conversion if needed, adjust accordingly
-        backgroundColor: '#ef4444',
+        label: 'L1',
+        data: data.map(d => d.active_power_a),
+        borderColor: '#f43f5e',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 0
       },
       {
-        label: 'L2 Current',
-        data: data.map(d => d.current_b / 1000),
-        backgroundColor: '#eab308',
+        label: 'L2',
+        data: data.map(d => d.active_power_b),
+        borderColor: '#fbbf24',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 0
       },
       {
-        label: 'L3 Current',
-        data: data.map(d => d.current_c / 1000),
-        backgroundColor: '#3b82f6',
+        label: 'L3',
+        data: data.map(d => d.active_power_c),
+        borderColor: '#3b82f6',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 0
       }
     ]
   };
@@ -105,64 +123,153 @@ export default function EnergyTrackerChart() {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top' },
+      legend: { display: false },
       tooltip: {
         mode: 'index',
         intersect: false,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#1e293b',
+        bodyColor: '#475569',
+        borderColor: '#e2e8f0',
+        borderWidth: 1,
+        padding: 12,
+        cornerRadius: 12,
+        usePointStyle: true
       },
     },
-    hover: { mode: 'nearest', intersect: true },
     scales: {
-      y: { beginAtZero: true }
+      y: {
+        grid: { color: 'rgba(0,0,0,0.03)' },
+        ticks: { color: '#94a3b8', font: { size: 11 } }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#94a3b8', font: { size: 11 }, maxRotation: 0 }
+      }
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4 hover:shadow-md transition-shadow">
-           <div className="h-12 w-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center"><Zap size={24}/></div>
+    <div className="space-y-8">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        {/* Consumption Card */}
+        <div className="relative overflow-hidden bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 group hover:shadow-xl transition-all duration-500">
+           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <ArrowDownLeft size={80} className="text-rose-500" />
+           </div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+              <div className="flex items-center space-x-3 mb-4">
+                 <div className="h-10 w-10 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center">
+                    <Zap size={20} fill="currentColor" />
+                 </div>
+                 <span className="text-sm font-bold text-rose-600/70 uppercase tracking-widest">Consumption</span>
+              </div>
+              <div>
+                 <p className="text-4xl font-black text-slate-800 tracking-tighter">
+                    {consumption.toLocaleString()} <span className="text-lg font-medium text-slate-400">W</span>
+                 </p>
+                 <p className="text-xs text-slate-400 mt-2 font-medium">Current Power Import</p>
+              </div>
+           </div>
+        </div>
+
+        {/* Production Card */}
+        <div className="relative overflow-hidden bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 group hover:shadow-xl transition-all duration-500">
+           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <ArrowUpRight size={80} className="text-emerald-500" />
+           </div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+              <div className="flex items-center space-x-3 mb-4">
+                 <div className="h-10 w-10 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center">
+                    <BatteryCharging size={20} fill="currentColor" />
+                 </div>
+                 <span className="text-sm font-bold text-emerald-600/70 uppercase tracking-widest">Production</span>
+              </div>
+              <div>
+                 <p className="text-4xl font-black text-slate-800 tracking-tighter">
+                    {production.toLocaleString()} <span className="text-lg font-medium text-slate-400">W</span>
+                 </p>
+                 <p className="text-xs text-slate-400 mt-2 font-medium">Current Power Export</p>
+              </div>
+           </div>
+        </div>
+
+        {/* Frequency Card */}
+        <div className="bg-slate-900 p-6 rounded-[2rem] shadow-xl border border-slate-800 flex flex-col justify-between">
+           <div className="flex items-center space-x-3 mb-4">
+              <div className="h-10 w-10 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center">
+                 <Activity size={20} />
+              </div>
+              <span className="text-sm font-bold text-blue-400 uppercase tracking-widest">Grid Frequency</span>
+           </div>
            <div>
-              <p className="text-sm text-slate-500 font-medium">Total Consumed (Last Entry)</p>
-              <p className="text-2xl font-bold text-slate-800">
-                {data.length > 0 ? (data[data.length-1].total_energy_consumed / 100).toFixed(2) : '--'}
+              <p className="text-4xl font-black text-white tracking-tighter">
+                 {latest ? (latest.frequency / 100).toFixed(2) : '--'} <span className="text-lg font-medium text-slate-500">Hz</span>
+              </p>
+              <div className="flex items-center mt-2 space-x-2">
+                 <div className="h-1.5 w-12 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 w-3/4 animate-pulse"></div>
+                 </div>
+                 <span className="text-[10px] text-slate-500 font-bold uppercase">Stable Range</span>
+              </div>
+           </div>
+        </div>
+
+        {/* Status Card */}
+        <div className={`p-6 rounded-[2rem] border transition-colors duration-500 flex flex-col justify-between ${netPower <= 0 ? 'bg-emerald-500 border-emerald-400 shadow-emerald-200 shadow-lg' : 'bg-white border-slate-100 shadow-sm'}`}>
+           <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${netPower <= 0 ? 'text-emerald-100' : 'text-slate-400'}`}>System Status</span>
+           <div className="mt-4">
+              <p className={`text-2xl font-black leading-tight ${netPower <= 0 ? 'text-white' : 'text-slate-800'}`}>
+                 {netPower <= 0 ? 'Energy Surplus' : 'Drawing from Grid'}
+              </p>
+              <p className={`text-xs mt-1 font-medium ${netPower <= 0 ? 'text-emerald-100' : 'text-slate-400'}`}>
+                 {netPower <= 0 ? 'Optimizing local storage...' : 'Normal grid operations'}
               </p>
            </div>
         </div>
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4 hover:shadow-md transition-shadow">
-           <div className="h-12 w-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center"><Activity size={24}/></div>
-           <div>
-              <p className="text-sm text-slate-500 font-medium">Avg Active Power</p>
-              <p className="text-2xl font-bold text-slate-800">
-                 {data.length > 0 ? (data[data.length-1].total_active_power / 100).toFixed(0) : '--'} W
-              </p>
-           </div>
-        </div>
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4 hover:shadow-md transition-shadow">
-           <div className="h-12 w-12 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center"><BatteryCharging size={24}/></div>
-           <div>
-              <p className="text-sm text-slate-500 font-medium">Grid Frequency</p>
-              <p className="text-2xl font-bold text-slate-800">
-                 {data.length > 0 ? (data[data.length-1].frequency / 100).toFixed(2) : '--'} Hz
-              </p>
-           </div>
-        </div>
+
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow-sn border border-slate-100 p-6">
-          <h3 className="text-lg font-bold text-slate-800 mb-4 tracking-tight">Power Distribution (W)</h3>
-          <div className="h-72">
-            <Line options={options} data={powerData} />
-          </div>
-        </div>
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-          <h3 className="text-lg font-bold text-slate-800 mb-4 tracking-tight">Phase Current (A)</h3>
-          <div className="h-72">
-            <Bar options={options} data={currentData} />
-          </div>
+        {/* Main Power Chart */}
+        <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
+           <div className="flex items-center justify-between mb-8">
+              <div>
+                 <h3 className="text-xl font-black text-slate-800 tracking-tight">Net Power Flow</h3>
+                 <p className="text-xs text-slate-400 font-medium">Bi-directional monitoring (W)</p>
+              </div>
+              <div className="flex items-center space-x-2 bg-slate-50 p-1 rounded-xl border border-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+                 <span className="px-2 py-1 rounded-lg bg-white shadow-sm border border-slate-200">24h History</span>
+                 <span className="px-2">Live</span>
+              </div>
+           </div>
+           <div className="h-80">
+              <Line options={options} data={powerData} />
+           </div>
         </div>
+
+        {/* Phase Analysis */}
+        <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
+           <div className="flex items-center justify-between mb-8">
+              <div>
+                 <h3 className="text-xl font-black text-slate-800 tracking-tight">Phase Performance</h3>
+                 <p className="text-xs text-slate-400 font-medium">Real-time load split (W)</p>
+              </div>
+              <div className="flex space-x-2">
+                 <div className="h-2 w-2 rounded-full bg-rose-500"></div>
+                 <div className="h-2 w-2 rounded-full bg-amber-400"></div>
+                 <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+              </div>
+           </div>
+           <div className="h-80">
+              <Line options={options} data={phaseData} />
+           </div>
+        </div>
+
       </div>
     </div>
   );
