@@ -6,11 +6,13 @@ import { Thermometer, Power, Flame, Calendar } from 'lucide-react';
 export default function StorageHeaterChart() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [resolution, setResolution] = useState('hourly');
   const [rawLatest, setRawLatest] = useState(null);
 
   useEffect(() => {
     // 1. Fetch aggregated history
-    api.get('/storage_heater/?resolution=hourly')
+    setLoading(true);
+    api.get(`/storage_heater/?resolution=${resolution}`)
       .then(response => {
         const results = response.data.results || response.data;
         setData([...results].reverse());
@@ -37,13 +39,22 @@ export default function StorageHeaterChart() {
     </div>;
   }
 
-  const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+  const labels = data.map(d => {
+    const date = new Date(d.timestamp);
+    if (resolution === 'hourly') {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else if (resolution === 'daily') {
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    } else {
+      return date.toLocaleDateString([], { month: 'short', year: 'numeric' });
+    }
+  });
 
   const chartData = {
     labels,
     datasets: [
       {
-        label: 'Zone 1 (Living Room)',
+        label: 'Tank Top (100%)',
         data: data.map(d => d.temp_one),
         borderColor: '#f97316',
         tension: 0.4,
@@ -51,7 +62,7 @@ export default function StorageHeaterChart() {
         borderWidth: 3
       },
       {
-        label: 'Zone 2 (Bedroom)',
+        label: 'Tank 75%',
         data: data.map(d => d.temp_two),
         borderColor: '#8b5cf6',
         tension: 0.4,
@@ -59,7 +70,7 @@ export default function StorageHeaterChart() {
         borderWidth: 3
       },
       {
-        label: 'Zone 3 (Bathroom)',
+        label: 'Tank 50%',
         data: data.map(d => d.temp_three),
         borderColor: '#06b6d4',
         tension: 0.4,
@@ -67,7 +78,7 @@ export default function StorageHeaterChart() {
         borderWidth: 3
       },
       {
-        label: 'Zone 4 (Hallway)',
+        label: 'Tank Bottom (25%)',
         data: data.map(d => d.temp_four),
         borderColor: '#10b981',
         tension: 0.4,
@@ -101,10 +112,9 @@ export default function StorageHeaterChart() {
     }
   };
 
-  const Relays = ({ title, state }) => (
-    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-[1.25rem] border border-slate-100 hover:border-orange-200 transition-colors group">
-       <span className="text-sm font-bold text-slate-700 tracking-tight">{title}</span>
-       <div className={`h-4 w-4 rounded-full transition-all duration-500 scale-100 group-hover:scale-110 ${state ? 'bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.6)]' : 'bg-slate-200'}`} />
+  const HeaterKnob = ({ active, kw, positionClasses }) => (
+    <div className={`absolute ${positionClasses} flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-500 z-20 ${active ? 'bg-orange-500 border-orange-300 shadow-[0_0_20px_rgba(249,115,22,1)] scale-110' : 'bg-slate-200 border-slate-300 shadow-inner'}`}>
+      <span className={`text-[9px] font-black ${active ? 'text-white' : 'text-slate-500'}`}>{kw}</span>
     </div>
   );
 
@@ -120,8 +130,10 @@ export default function StorageHeaterChart() {
                </div>
                <h3 className="text-xl font-black text-slate-800 tracking-tight">Thermal Retention</h3>
             </div>
-            <div className="flex items-center space-x-2 text-[10px] font-black uppercase text-slate-400 tracking-widest px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
-               <Calendar size={12} className="mr-1" /> Last 24 Hours
+            <div className="flex items-center space-x-1 bg-slate-50 p-1 rounded-xl border border-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+               <button onClick={() => setResolution('hourly')} className={`px-3 py-1.5 rounded-lg transition-all ${resolution === 'hourly' ? 'bg-white shadow-sm border border-slate-200 text-slate-800' : 'hover:bg-slate-200/50'}`}>24h</button>
+               <button onClick={() => setResolution('daily')} className={`px-3 py-1.5 rounded-lg transition-all ${resolution === 'daily' ? 'bg-white shadow-sm border border-slate-200 text-slate-800' : 'hover:bg-slate-200/50'}`}>Month</button>
+               <button onClick={() => setResolution('monthly')} className={`px-3 py-1.5 rounded-lg transition-all ${resolution === 'monthly' ? 'bg-white shadow-sm border border-slate-200 text-slate-800' : 'hover:bg-slate-200/50'}`}>Year</button>
             </div>
          </div>
          <div className="h-[400px]">
@@ -131,25 +143,56 @@ export default function StorageHeaterChart() {
 
       {/* Relays Section */}
       <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col h-full">
-         <div className="flex items-center space-x-3 mb-8">
-            <div className="h-10 w-10 bg-slate-900 text-white rounded-2xl flex items-center justify-center">
-               <Flame size={20} />
+         <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-3">
+               <div className="h-10 w-10 bg-slate-900 text-white rounded-2xl flex items-center justify-center">
+                  <Flame size={20} />
+               </div>
+               <h3 className="text-lg font-black text-slate-800 tracking-tight">2300L Buffer Tank</h3>
             </div>
-            <h3 className="text-xl font-black text-slate-800 tracking-tight">Active Heating</h3>
          </div>
          
-         <div className="space-y-3 flex-grow">
-             <Relays title="Living Room" state={rawLatest?.relay_one} />
-             <Relays title="Master Bedroom" state={rawLatest?.relay_two} />
-             <Relays title="Bathroom" state={rawLatest?.relay_three} />
-             <Relays title="Main Hallway" state={rawLatest?.relay_four} />
-             <Relays title="Aux Heater A" state={rawLatest?.relay_five} />
-             <Relays title="Aux Heater B" state={rawLatest?.relay_six} />
+         <div className="flex-grow flex items-center justify-center relative py-4">
+            {/* The Tank Graphic */}
+            <div className="w-32 h-64 bg-slate-100 rounded-[2rem] border-[6px] border-slate-300 relative shadow-inner overflow-hidden flex flex-col justify-between">
+               {/* Water gradient approximation (hot top, cool bottom default, overlaid with uniform style) */}
+               <div className="absolute inset-x-0 bottom-0 top-[10%] bg-gradient-to-b from-rose-400 via-orange-300 to-cyan-300 opacity-30"></div>
+               
+               {/* 100% sensor */}
+               <div className="flex-1 w-full flex items-center justify-between px-2 z-10 border-b border-white/30">
+                  <div className="text-[9px] font-black text-slate-500 bg-white/80 px-1 rounded shadow-sm">100%</div>
+                  <div className="text-xs font-black text-slate-800 drop-shadow-md">{rawLatest?.temp_one?.toFixed(1) || '--'}°</div>
+               </div>
+               {/* 75% sensor */}
+               <div className="flex-1 w-full flex items-center justify-between px-2 z-10 border-b border-white/30">
+                  <div className="text-[9px] font-black text-slate-500 bg-white/80 px-1 rounded shadow-sm">75%</div>
+                  <div className="text-xs font-black text-slate-800 drop-shadow-md">{rawLatest?.temp_two?.toFixed(1) || '--'}°</div>
+               </div>
+               {/* 50% sensor */}
+               <div className="flex-1 w-full flex items-center justify-between px-2 z-10 border-b border-white/30">
+                  <div className="text-[9px] font-black text-slate-500 bg-white/80 px-1 rounded shadow-sm">50%</div>
+                  <div className="text-xs font-black text-slate-800 drop-shadow-md">{rawLatest?.temp_three?.toFixed(1) || '--'}°</div>
+               </div>
+               {/* 25% sensor */}
+               <div className="flex-1 w-full flex items-center justify-between px-2 z-10">
+                  <div className="text-[9px] font-black text-slate-500 bg-white/80 px-1 rounded shadow-sm">25%</div>
+                  <div className="text-xs font-black text-slate-800 drop-shadow-md">{rawLatest?.temp_four?.toFixed(1) || '--'}°</div>
+               </div>
+            </div>
+
+            {/* Heaters mounted on the sides of the tank container */}
+            <HeaterKnob active={rawLatest?.relay_one} kw="1kW" positionClasses="-left-2 top-[15%]" />
+            <HeaterKnob active={rawLatest?.relay_two} kw="1kW" positionClasses="-left-2 top-[40%]" />
+            <HeaterKnob active={rawLatest?.relay_three} kw="1kW" positionClasses="-left-2 top-[65%]" />
+
+            <HeaterKnob active={rawLatest?.relay_four} kw="2kW" positionClasses="-right-2 top-[30%]" />
+            <HeaterKnob active={rawLatest?.relay_five} kw="2kW" positionClasses="-right-2 top-[55%]" />
+            <HeaterKnob active={rawLatest?.relay_six} kw="2kW" positionClasses="-right-2 top-[80%]" />
          </div>
 
-         <div className="mt-8 p-5 bg-blue-50 text-blue-800 text-[11px] font-bold rounded-2xl border border-blue-100 flex items-start space-x-3 leading-relaxed">
-            <Power className="mt-0.5 shrink-0" size={16} />
-            <p>Relays are currently managed by the hardware MCU. Remote overrides are read-only.</p>
+         <div className="mt-8 p-4 bg-orange-50 text-orange-800 text-[10px] font-bold rounded-2xl border border-orange-100 flex items-start space-x-3 leading-tight">
+            <Power className="mt-0.5 shrink-0 text-orange-500" size={14} />
+            <p>Safety Limit: 85°C. Heating elements activate automatically when surplus solar power is detected.</p>
          </div>
       </div>
 

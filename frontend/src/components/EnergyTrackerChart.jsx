@@ -30,9 +30,11 @@ ChartJS.register(
 export default function EnergyTrackerChart() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [resolution, setResolution] = useState('hourly');
 
   useEffect(() => {
-    api.get('/energy_tracker/?resolution=hourly')
+    setLoading(true);
+    api.get(`/energy_tracker/?resolution=${resolution}`)
       .then(response => {
         const results = response.data.results || response.data;
         setData([...results].reverse());
@@ -42,7 +44,7 @@ export default function EnergyTrackerChart() {
         console.error(err);
         setLoading(false);
       });
-  }, []);
+  }, [resolution]);
 
   if (loading) {
     return (
@@ -58,7 +60,16 @@ export default function EnergyTrackerChart() {
   const consumption = netPower > 0 ? netPower : 0;
   const production = netPower < 0 ? Math.abs(netPower) : 0;
 
-  const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  const labels = data.map(d => {
+    const date = new Date(d.timestamp);
+    if (resolution === 'hourly') {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else if (resolution === 'daily') {
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    } else {
+      return date.toLocaleDateString([], { month: 'short', year: 'numeric' });
+    }
+  });
 
   const powerData = {
     labels,
@@ -237,38 +248,58 @@ export default function EnergyTrackerChart() {
         
         {/* Main Power Chart */}
         <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
-           <div className="flex items-center justify-between mb-8">
-              <div>
-                 <h3 className="text-xl font-black text-slate-800 tracking-tight">Net Power Flow</h3>
-                 <p className="text-xs text-slate-400 font-medium">Bi-directional monitoring (W)</p>
-              </div>
-              <div className="flex items-center space-x-2 bg-slate-50 p-1 rounded-xl border border-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
-                 <span className="px-2 py-1 rounded-lg bg-white shadow-sm border border-slate-200">24h History</span>
-                 <span className="px-2">Live</span>
-              </div>
-           </div>
+            <div className="flex items-center justify-between mb-8">
+               <div>
+                  <h3 className="text-xl font-black text-slate-800 tracking-tight">Net Power Flow</h3>
+                  <p className="text-xs text-slate-400 font-medium">Bi-directional monitoring (W)</p>
+               </div>
+               <div className="flex items-center space-x-1 bg-slate-50 p-1 rounded-xl border border-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+                  <button onClick={() => setResolution('hourly')} className={`px-3 py-1.5 rounded-lg transition-all ${resolution === 'hourly' ? 'bg-white shadow-sm border border-slate-200 text-slate-800' : 'hover:bg-slate-200/50'}`}>24h</button>
+                  <button onClick={() => setResolution('daily')} className={`px-3 py-1.5 rounded-lg transition-all ${resolution === 'daily' ? 'bg-white shadow-sm border border-slate-200 text-slate-800' : 'hover:bg-slate-200/50'}`}>Month</button>
+                  <button onClick={() => setResolution('monthly')} className={`px-3 py-1.5 rounded-lg transition-all ${resolution === 'monthly' ? 'bg-white shadow-sm border border-slate-200 text-slate-800' : 'hover:bg-slate-200/50'}`}>Year</button>
+               </div>
+            </div>
            <div className="h-80">
               <Line options={options} data={powerData} />
            </div>
         </div>
 
-        {/* Phase Analysis */}
-        <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
-           <div className="flex items-center justify-between mb-8">
-              <div>
-                 <h3 className="text-xl font-black text-slate-800 tracking-tight">Phase Performance</h3>
-                 <p className="text-xs text-slate-400 font-medium">Real-time load split (W)</p>
-              </div>
-              <div className="flex space-x-2">
-                 <div className="h-2 w-2 rounded-full bg-rose-500"></div>
-                 <div className="h-2 w-2 rounded-full bg-amber-400"></div>
-                 <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-              </div>
-           </div>
-           <div className="h-80">
-              <Line options={options} data={phaseData} />
-           </div>
-        </div>
+         {/* Phase Analysis */}
+         <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
+            <div className="flex flex-col space-y-6 mb-8">
+               <div className="flex items-center justify-between">
+                  <div>
+                     <h3 className="text-xl font-black text-slate-800 tracking-tight">Phase Performance</h3>
+                     <p className="text-xs text-slate-400 font-medium">Real-time load split</p>
+                  </div>
+                  <div className="flex space-x-2">
+                     <div className="h-2 w-2 rounded-full bg-rose-500"></div>
+                     <div className="h-2 w-2 rounded-full bg-amber-400"></div>
+                     <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                  </div>
+               </div>
+               
+               <div className="grid grid-cols-3 gap-4">
+                 {[
+                   { label: 'L1', power: latest?.active_power_a || 0, voltage: latest?.voltage_a || 0, current: latest?.current_a || 0, color: 'text-rose-500', bg: 'bg-rose-50' },
+                   { label: 'L2', power: latest?.active_power_b || 0, voltage: latest?.voltage_b || 0, current: latest?.current_b || 0, color: 'text-amber-500', bg: 'bg-amber-50' },
+                   { label: 'L3', power: latest?.active_power_c || 0, voltage: latest?.voltage_c || 0, current: latest?.current_c || 0, color: 'text-blue-500', bg: 'bg-blue-50' }
+                 ].map((phase, i) => (
+                   <div key={i} className={`p-4 rounded-2xl ${phase.bg} flex flex-col`}>
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${phase.color}`}>{phase.label} Phase</span>
+                      <span className="text-xl font-black text-slate-800 mt-1">{phase.power.toFixed(0)} <span className="text-sm font-medium">W</span></span>
+                      <div className="flex justify-between mt-2 pt-2 border-t border-black/5 text-[10px] font-bold text-slate-600">
+                         <span>{phase.voltage.toFixed(1)} V</span>
+                         <span>{phase.current.toFixed(1)} A</span>
+                      </div>
+                   </div>
+                 ))}
+               </div>
+            </div>
+            <div className="h-48">
+               <Line options={options} data={phaseData} />
+            </div>
+         </div>
 
       </div>
     </div>

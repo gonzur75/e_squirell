@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.db.models import Avg
-from django.db.models.functions import TruncHour, TruncDay
+from django.db.models.functions import TruncHour, TruncDay, TruncMonth
 
 from energy_tracker.models import EnergyLog
 from energy_tracker.serializers import EnergyLogSerializer
@@ -14,8 +14,13 @@ class EnergyLogViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         resolution = request.query_params.get('resolution')
-        if resolution in ['hourly', 'daily']:
-            trunc_func = TruncHour if resolution == 'hourly' else TruncDay
+        if resolution in ['hourly', 'daily', 'monthly']:
+            if resolution == 'hourly':
+                trunc_func = TruncHour
+            elif resolution == 'daily':
+                trunc_func = TruncDay
+            else:
+                trunc_func = TruncMonth
             
             numeric_fields = [
                 f.name for f in EnergyLog._meta.fields 
