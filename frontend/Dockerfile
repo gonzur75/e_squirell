@@ -20,6 +20,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy the built assets to the Nginx root directory
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]

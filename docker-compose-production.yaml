@@ -128,6 +128,23 @@ services:
     networks:
       - backend_network
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - type: bind
+        source: ~/e_squirell_certs
+        target: /etc/nginx/ssl
+        read_only: true
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - backend_network
+
 volumes:
   backend_db_volume:
   data:
