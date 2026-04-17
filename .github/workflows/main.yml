@@ -1,16 +1,74 @@
-# when action will run
-on: 
-# trigers on push
+name: E-Squirell CI/CD
+
+on:
   push:
     branches: [ deploy ]
-# run workflows manualy from Actions tab
-  workflow_dispatch:
+  workflow_dispatch:  # allow manual trigger from Actions tab
 
 jobs:
-  build:
+  # ─────────────────────────────────────────
+  # Job 1: Tests (optional — won't block deploy)
+  # ─────────────────────────────────────────
+  test:
+    name: Run Django Tests
     runs-on: self-hosted
-    # sequence of task that will be executed
+    continue-on-error: true  # tests are informational only for now
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Build the docker-compose stack
-        run: docker compose -f docker-compose-production.yaml up --build -d
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run pytest inside backend container
+        working-directory: ./
+        run: |
+          docker compose -f docker-compose-production.yaml run --rm \
+            --no-deps \
+            backend \
+            python -m pytest --tb=short -q
+        continue-on-error: true
+
+  # ─────────────────────────────────────────
+  # Job 2: Deploy (always runs after test)
+  # ─────────────────────────────────────────
+  deploy:
+    name: Deploy to Production (Pi)
+    runs-on: self-hosted
+    needs: test  # waits for test job to finish, but not its result
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v4
+
+      - name: Pull latest images
+        run: docker compose -f docker-compose-production.yaml pull --ignore-pull-failures || true
+
+      - name: Build & restart services
+        run: |
+          docker compose -f docker-compose-production.yaml up --build -d
+
+      - name: Remove dangling images (cleanup)
+        run: docker image prune -f
+
+      - name: Wait for services to be ready
+        run: sleep 15
+
+      - name: Health check — backend API
+        run: |
+          echo "Checking backend API..."
+          curl --fail --silent --max-time 10 \
+            -k https://localhost/api/v1/energy_tracker/ \
+            | head -c 100 \
+            && echo "✅ Backend API is responding" \
+            || (echo "❌ Backend health check FAILED" && exit 1)
+
+      - name: Health check — frontend
+        run: |
+          echo "Checking frontend..."
+          curl --fail --silent --max-time 10 \
+            -k https://localhost/ \
+            | grep -q "E-Squirell" \
+            && echo "✅ Frontend is responding" \
+            || (echo "❌ Frontend health check FAILED" && exit 1)
+
+      - name: Show running containers
+        run: docker compose -f docker-compose-production.yaml ps
