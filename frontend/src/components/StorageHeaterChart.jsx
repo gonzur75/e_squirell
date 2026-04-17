@@ -152,11 +152,55 @@ export default function StorageHeaterChart() {
             </div>
          </div>
          
-         <div className="flex-grow flex items-center justify-center relative py-4">
+          <div className="flex-grow flex items-center justify-center relative py-4">
             {/* The Tank Graphic */}
-            <div className="w-32 h-64 bg-slate-100 rounded-[2rem] border-[6px] border-slate-300 relative shadow-inner overflow-hidden flex flex-col justify-between">
-               {/* Water gradient approximation (hot top, cool bottom default, overlaid with uniform style) */}
-               <div className="absolute inset-x-0 bottom-0 top-[10%] bg-gradient-to-b from-rose-400 via-orange-300 to-cyan-300 opacity-30"></div>
+            <div className="w-32 h-64 bg-slate-50 rounded-[2rem] border-[6px] border-slate-300 relative shadow-inner overflow-hidden flex flex-col justify-between">
+               
+               {/* 1. Logic for dynamic gradient */}
+               {(() => {
+                  const getTempColor = (t) => {
+                    if (!t) return 'rgba(203, 213, 225, 0.4)'; // slate-300
+                    
+                    const points = [
+                      { temp: 20, rgb: [34, 211, 238] },  // Cyan (Cool)
+                      { temp: 40, rgb: [252, 165, 165] }, // Light Red (Sufficient)
+                      { temp: 80, rgb: [225, 29, 72] }    // Dark Rose (Hot)
+                    ];
+
+                    let r, g, b;
+                    if (t <= points[0].temp) {
+                      [r, g, b] = points[0].rgb;
+                    } else if (t >= points[2].temp) {
+                      [r, g, b] = points[2].rgb;
+                    } else {
+                      // Find the segment
+                      const i = t < points[1].temp ? 0 : 1;
+                      const p1 = points[i];
+                      const p2 = points[i+1];
+                      const ratio = (t - p1.temp) / (p2.temp - p1.temp);
+                      
+                      r = Math.round(p1.rgb[0] + (p2.rgb[0] - p1.rgb[0]) * ratio);
+                      g = Math.round(p1.rgb[1] + (p2.rgb[1] - p1.rgb[1]) * ratio);
+                      b = Math.round(p1.rgb[2] + (p2.rgb[2] - p1.rgb[2]) * ratio);
+                    }
+                    
+                    return `rgba(${r}, ${g}, ${b}, 0.5)`;
+                  };
+
+                  const c1 = getTempColor(rawLatest?.temp_one);
+                  const c2 = getTempColor(rawLatest?.temp_two);
+                  const c3 = getTempColor(rawLatest?.temp_three);
+                  const c4 = getTempColor(rawLatest?.temp_four);
+
+                  return (
+                    <div 
+                      className="absolute inset-0 transition-all duration-1000"
+                      style={{ 
+                        background: `linear-gradient(to bottom, ${c1} 0%, ${c2} 33%, ${c3} 66%, ${c4} 100%)` 
+                      }}
+                    />
+                  );
+               })()}
                
                {/* 100% sensor */}
                <div className="flex-1 w-full flex items-center justify-between px-2 z-10 border-b border-white/30">
