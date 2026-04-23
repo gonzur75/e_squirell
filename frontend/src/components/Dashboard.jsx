@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import EnergyTrackerChart from './EnergyTrackerChart';
 import StorageHeaterChart from './StorageHeaterChart';
 import api from '../api';
@@ -6,6 +6,18 @@ import { Settings as SettingsIcon, Zap, Shield, Cpu } from 'lucide-react';
 
 export default function Dashboard() {
   const [settings, setSettings] = useState(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     // Fetch global configuration
@@ -24,6 +36,12 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 font-sans selection:bg-blue-100">
+      {isOffline && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-amber-500/90 backdrop-blur-md text-white px-6 py-2 rounded-full z-[100] flex items-center space-x-3 shadow-xl shadow-amber-500/20 border border-amber-400/50 animate-bounce">
+           <Zap size={14} fill="currentColor" className="text-white" />
+           <span className="text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap">Viewing Cached Data (Offline)</span>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto space-y-12">
         
         {/* Premium Header */}
