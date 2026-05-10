@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 from typing import Collection, Sequence, Generator
 
@@ -10,6 +11,8 @@ from energy_tracker.enums import RelayAction, PhaseRelayMap, RelayNumberMap
 from storage_heater.models import StorageHeater
 
 import pytz
+
+logger = logging.getLogger(__name__)
 
 project_settings = get_project_settings()
 
@@ -192,7 +195,10 @@ def send_relay_action(relay_number: int, relay_action: RelayAction = RelayAction
    """
 
     payload = {"heating_action": f'relay_{relay_number}_{relay_action}'}
-    publish.single(settings.MQTT_TOPIC, json.dumps(payload), hostname=settings.MQTT_SERVER)
+    try:
+        publish.single(settings.MQTT_TOPIC, json.dumps(payload), hostname=settings.MQTT_SERVER)
+    except Exception as e:
+        logger.error(f"Failed to publish MQTT message for relay {relay_number}: {e}")
 
 
 def turn_off_relays(relays: Collection[int]) -> None:

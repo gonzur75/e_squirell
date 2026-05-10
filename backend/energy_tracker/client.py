@@ -9,6 +9,8 @@ import tinytuya
 from energy_tracker.serializers import EnergyLogSerializer
 from energy_tracker.utils import process_smart_meter_data
 
+import time
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,18 +35,22 @@ class PC321MeterClient:
         )
 
     def get_device_status(self) -> Optional[Dict[str, Any]]:
-        """Get the current status of the device."""
-        try:
-            self.device.set_socketTimeout(5)
-            status = self.device.status()
-            if status and 'dps' in status:
-                return status
-            else:
-                logger.error(f"Failed to get device status: {status}")
-                return None
-        except Exception as e:
-            logger.exception(f"Error getting device status: {e}")
-            return None
+        """Get the current status of the device with retries."""
+        self.device.set_socketTimeout(5)
+        for attempt in range(1, 4):
+            try:
+                status = self.device.status()
+                if status and 'dps' in status:
+                    return status
+                
+                logger.warning(f"Attempt {attempt}: Failed to get status for {self.device.id}. Error: {status.get('Error') if status else 'Empty response'}")
+            except Exception as e:
+                logger.error(f"Attempt {attempt}: Exception getting status for {self.device.id}: {e}")
+            
+            if attempt < 3:
+                time.sleep(1)
+        
+        return None
 
     @staticmethod
     def process_device_data(status: Dict[str, Any]) -> Dict[str, float]:
