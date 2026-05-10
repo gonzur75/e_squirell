@@ -1,6 +1,7 @@
-# e_squirell
+# E-Squirell
 
-## Celery Integration for Asynchronous Tasks
+[Read the Developer Setup Guide](docs/DEVELOPER_SETUP.md) for instructions on automating HTTPS, local domains, and Docker initialization.
+[Read the Automated Backups & Celery Guide](docs/BACKUPS_AND_CELERY.md) to understand the nightly pg_dump schedules.
 
 This document describes the integration of Celery for asynchronous task processing in the e_squirell project.
 

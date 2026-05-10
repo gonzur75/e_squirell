@@ -179,6 +179,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'core.tasks.export_to_databricks_task',
         'schedule': crontab(minute=0, hour=0),
     },
+    'backup-database-nightly': {
+        'task': 'energy_tracker.tasks.backup_database',
+        'schedule': crontab(minute=0, hour=2),
+    },
 }
 
 REST_FRAMEWORK = {

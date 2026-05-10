@@ -9,7 +9,7 @@ WORKDIR /app
 
 
 COPY Pipfile Pipfile.lock ./
-RUN pip install -U pipenv  && pipenv install --system --dev
+RUN apk add --no-cache postgresql-client && pip install -U pipenv && pipenv install --system --dev
 COPY . .
 
 EXPOSE 8000
