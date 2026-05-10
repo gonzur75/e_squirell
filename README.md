@@ -1,4 +1,6 @@
-# e_squirell
+# E-Squirell
+
+[Read the Developer Setup Guide](docs/DEVELOPER_SETUP.md) for instructions on automating HTTPS, local domains, and Docker initialization.
 
 ## Celery Integration for Asynchronous Tasks
 
