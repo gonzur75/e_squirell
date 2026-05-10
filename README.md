@@ -1,7 +1,6 @@
 # E-Squirell
 
 [Read the Developer Setup Guide](docs/DEVELOPER_SETUP.md) for instructions on automating HTTPS, local domains, and Docker initialization.
-[Read the Docker Architecture Guide](docs/DOCKER_ARCHITECTURE.md) to understand the automated DB seeding and Django migrations.
 
 ## Celery Integration for Asynchronous Tasks
 
