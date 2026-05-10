@@ -16,5 +16,7 @@ EXPOSE 8000
 ARG UID
 ARG GID
 ARG USER
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-CMD python manage.py makemigrations && python manage.py migrate
+ENTRYPOINT ["/app/entrypoint.sh"]
